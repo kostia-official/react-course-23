@@ -1,6 +1,6 @@
 import React from "react";
-import styles from "./CenterText.module.scss";
+import styled from "styled-components";
 
-export const CenterText = props => {
-  return <div className={styles.textCenter}>{props.children}</div>;
-};
+export const CenterText = styled.div`
+  text-align: center;
+`;

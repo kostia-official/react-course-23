@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import cn from "classnames";
 
 import styles from "./RandomAnswerer.module.scss";
+import { Title } from "../Title/Title";
 
 export const RandomAnswerer = props => {
   const wantsToAnswer = _.sample(props.answerers);
@@ -12,7 +13,7 @@ export const RandomAnswerer = props => {
 
   return (
     <div>
-      <b className={styles.randomAnswererTitle}>{randomTitle}: </b>
+      <Title>{randomTitle}: </Title>
       <span
         id="random-answerer"
         className={cn(styles.randomAnswerer, styles.hide)}

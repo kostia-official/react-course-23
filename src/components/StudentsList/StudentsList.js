@@ -1,16 +1,23 @@
 import React from "react";
 import _ from "lodash";
 import PropTypes from "prop-types";
+import styled from "styled-components";
+import { Title } from "../Title/Title";
+import { CenterText } from "../CenterText/CenterText";
 
-import "./StudentsList.scss";
+const ListItem = styled.li`
+  list-style: square;
+`;
 
 export const StudentsList = ({ students, title = "Список студентов:" }) => {
   return (
     <div className="students-list-container">
-      <h2>{title}</h2>
+      <CenterText>
+        <Title>{title}</Title>
+      </CenterText>
       <ul>
         {_.map(students, ({ name }, i) => {
-          return <li key={i}>{name}</li>;
+          return <ListItem key={i}>{name}</ListItem>;
         })}
       </ul>
     </div>
