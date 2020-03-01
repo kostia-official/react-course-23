@@ -1,0 +1,48 @@
+$left-bar-width: 230px;
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.studentsListContainer {
+  //background: indianred;
+
+  position: fixed;
+
+  width: $left-bar-width;
+  height: 100%;
+  top: 0;
+
+  border-right-color: dimgrey;
+  border-right-width: 1px;
+  border-right-style: solid;
+}
+
+.randomAnswererContainer {
+  //background: moccasin;
+
+  margin-left: $left-bar-width;
+}
+
+.left-position {
+  position: fixed;
+}
+.right-position {
+  margin-left: $left-bar-width;
+}
+
+.left-float {
+  float: left;
+}
+
+.left-inline-block {
+  display: inline-block;
+  vertical-align: top;
+  float: left;
+}
+.right-inline-block {
+  display: inline-block;
+  vertical-align: top;
+  width: calc(100% - #{$left-bar-width});
+}
