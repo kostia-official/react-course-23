@@ -1,0 +1,24 @@
+$left-bar-width: 230px;
+
+.appContainer {
+  display: flex;
+}
+
+.studentsListContainer {
+  //background: indianred;
+
+  width: $left-bar-width;
+  height: 100vh;
+
+  border-right-color: dimgrey;
+  border-right-width: 1px;
+  border-right-style: solid;
+
+  padding-left: 10px;
+}
+
+.randomAnswererContainer {
+  //background: moccasin;
+
+  flex-grow: 1;
+}
