@@ -1,5 +1,5 @@
 import React from "react";
-import _ from "lodash";
+import styled from "styled-components";
 import students from "../../students";
 import { RandomAnswerer } from "../RandomAnswerer/RandomAnswerer";
 import { StudentsList } from "../StudentsList/StudentsList";
@@ -7,22 +7,40 @@ import { CenterText } from "../CenterText/CenterText";
 
 import styles from "./App.module.scss";
 
+const AppContainer = styled.div`
+  display: flex;
+`;
+
+const width = 230;
+
+const StudentsListContainer = styled.div`
+  width: ${width}px;
+  height: 100vh;
+
+  border-right-color: dimgrey;
+  border-right-width: 1px;
+  border-right-style: solid;
+
+  padding-left: 10px;
+`;
+
+const RandomAnswererContainer = styled.div`
+  flex-grow: 1;
+`;
+
 function App() {
-  const names = _.map(students, "name");
-  console.log(names);
-
   return (
-    <div className={styles.appContainer}>
-      <div className={styles.studentsListContainer}>
+    <AppContainer>
+      <StudentsListContainer>
         <StudentsList students={students} />
-      </div>
+      </StudentsListContainer>
 
-      <div className={styles.randomAnswererContainer}>
+      <RandomAnswererContainer>
         <CenterText>
           <RandomAnswerer answerers={students} />
         </CenterText>
-      </div>
-    </div>
+      </RandomAnswererContainer>
+    </AppContainer>
   );
 }
 
