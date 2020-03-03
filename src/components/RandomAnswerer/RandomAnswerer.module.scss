@@ -1,7 +1,13 @@
-.randomAnswererTitle {
-  font-size: x-large;
-  padding: 10px 0;
-  display: block;
+.container {
+  padding: 40px 0;
+
+  .title {
+    padding-bottom: 10px;
+  }
+
+  .answererContainer {
+    height: 30px;
+  }
 }
 
 .hide {
