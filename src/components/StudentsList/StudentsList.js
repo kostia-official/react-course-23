@@ -1,24 +1,20 @@
 import React from "react";
-import _ from "lodash";
 import PropTypes from "prop-types";
 
-import styles from "./StudentsList.module.scss";
+import MaterialTable from "material-table";
 
-export const StudentsList = ({ students, title = "Список студентов:" }) => {
+export const StudentsList = ({ students, title = "Список студентов" }) => {
   return (
-    <div className={styles.studentsListContainer}>
-      <h2>{title}</h2>
-      <ul>
-        {_.map(students, ({ name }, i) => {
-          return <li key={i}>{name}</li>;
-        })}
-      </ul>
-    </div>
+    <MaterialTable
+      title={title}
+      columns={[{ title: "Имя", field: "name" }]}
+      data={students}
+      options={{
+        paging: false,
+        search: false
+      }}
+    />
   );
-};
-
-StudentsList.defaultProps = {
-  title: "Список студентов:"
 };
 
 StudentsList.propTypes = {
