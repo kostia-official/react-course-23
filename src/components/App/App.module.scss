@@ -25,9 +25,9 @@ $breakpoint: 700px;
   }
 }
 
-.studentsListContainer {
+.studentsListsContainer {
   @include desktop {
-    width: 235px;
+    min-width: 250px;
     margin-right: 10px;
   }
 }
@@ -40,4 +40,8 @@ $breakpoint: 700px;
   @include desktop {
     flex-grow: 1;
   }
+}
+
+.presentStudentsListContainer {
+  margin-bottom: 10px;
 }

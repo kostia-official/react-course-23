@@ -1,0 +1,15 @@
+.paper {
+  display: flex;
+  align-items: center;
+  justify-content: right;
+  margin-top: 10px;
+  padding: 14px 6px 16px 16px;
+}
+
+.select {
+  width: 100%;
+}
+
+.selectContainer {
+  flex-grow: 1;
+}
