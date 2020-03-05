@@ -1,6 +1,6 @@
 import React from "react";
 import _ from "lodash";
-import titles from "../../titles";
+import titles from "../../data/titles";
 import PropTypes from "prop-types";
 
 import styles from "./RandomAnswerer.module.scss";

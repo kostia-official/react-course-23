@@ -1,10 +1,12 @@
 import React from "react";
-import students from "../../students";
+import { getStudents } from "../../data/getStudents";
 import { RandomAnswerer } from "../RandomAnswerer/RandomAnswerer";
 import { StudentsList } from "../StudentsList/StudentsList";
 import { CenterText } from "../CenterText/CenterText";
 import { Header } from "../Header/Header";
 import styles from "./App.module.scss";
+
+const students = getStudents();
 
 function App() {
   return (
