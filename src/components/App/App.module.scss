@@ -25,11 +25,15 @@ $breakpoint: 700px;
   }
 }
 
-.studentsListContainer {
+.studentsListsContainer {
   @include desktop {
-    width: 235px;
+    width: 285px;
     margin-right: 10px;
   }
+}
+
+.studentsListContainer {
+  margin-bottom: 10px;
 }
 
 .randomAnswererContainer {
