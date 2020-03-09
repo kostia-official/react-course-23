@@ -13,7 +13,7 @@ class App extends React.Component {
     students: getStudents()
   };
 
-  updateStudent = (id, updater) => {
+  updateStudentById = (id, updater) => {
     this.setState(state => {
       return {
         students: _.map(state.students, student => {
@@ -28,18 +28,22 @@ class App extends React.Component {
     });
   };
 
-  updateScore(id, score) {
-    this.updateStudent(id, student => ({
+  addScore = (id, score) => {
+    this.updateStudentById(id, student => ({
       score: student.score + score
     }));
-  }
+  };
+
+  setScore = (id, score) => {
+    this.updateStudentById(id, () => ({ score }));
+  };
 
   setAbsentStatus = id => {
-    this.updateStudent(id, () => ({ isAbsent: true }));
+    this.updateStudentById(id, () => ({ isAbsent: true }));
   };
 
   setPresentStatus = id => {
-    this.updateStudent(id, () => ({ isAbsent: false }));
+    this.updateStudentById(id, () => ({ isAbsent: false }));
   };
 
   resetAbsentStatus = () => {
@@ -61,7 +65,7 @@ class App extends React.Component {
     const absentStudents = _.filter(students, { isAbsent: true });
 
     return (
-      <>
+      <div>
         <Persist
           name="app"
           data={this.state}
@@ -91,6 +95,7 @@ class App extends React.Component {
                     onClick: this.resetAbsentStatus
                   }
                 ]}
+                onScoreUpdate={this.setScore}
               />
             </div>
 
@@ -114,13 +119,13 @@ class App extends React.Component {
               <RandomAnswerer
                 answerers={presentStudents}
                 onAnswer={(id, score) => {
-                  this.updateScore(id, score);
+                  this.addScore(id, score);
                 }}
               />
             </CenterText>
           </div>
         </div>
-      </>
+      </div>
     );
   }
 }

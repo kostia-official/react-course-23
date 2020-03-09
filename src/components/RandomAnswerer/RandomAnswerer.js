@@ -33,7 +33,6 @@ export class RandomAnswerer extends React.PureComponent {
   }
 
   render() {
-    console.log("render");
     const { isHideStudent, randomTitle, randomAnswerer } = this.state;
 
     return (
