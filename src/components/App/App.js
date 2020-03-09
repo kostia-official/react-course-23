@@ -1,128 +1,44 @@
 import React from "react";
-import _ from "lodash";
-import { Persist } from "react-persist";
-import { getStudents } from "../../data/getStudents";
-import { RandomAnswerer } from "../RandomAnswerer/RandomAnswerer";
-import { StudentsList } from "../StudentsList/StudentsList";
-import { CenterText } from "../CenterText/CenterText";
-import { Header } from "../Header/Header";
-import styles from "./App.module.scss";
+import { OrderForm } from "../OrderForm/OrderForm";
 
-class App extends React.Component {
+export class App extends React.Component {
   state = {
-    students: getStudents()
-  };
-
-  updateStudent = (id, updater) => {
-    this.setState(state => {
-      return {
-        students: _.map(state.students, student => {
-          if (student.id !== id) return student;
-
-          return {
-            ...student,
-            ...updater(student)
-          };
-        })
-      };
-    });
-  };
-
-  updateScore(id, score) {
-    this.updateStudent(id, student => ({
-      score: student.score + score
-    }));
-  }
-
-  setAbsentStatus = id => {
-    this.updateStudent(id, () => ({ isAbsent: true }));
-  };
-
-  setPresentStatus = id => {
-    this.updateStudent(id, () => ({ isAbsent: false }));
-  };
-
-  resetAbsentStatus = () => {
-    this.setState(state => {
-      return {
-        students: _.map(state.students, student => {
-          return {
-            ...student,
-            isAbsent: false
-          };
-        })
-      };
-    });
+    products: [
+      {
+        id: "1",
+        name: "Шаурма",
+        price: 70,
+        additions: [
+          { id: "6", name: "Cыр", price: 10 },
+          { id: "7", name: "Грибы", price: 5 },
+          { id: "8", name: "Ананасы", price: 15 },
+          { id: "9", name: "Без мяса", price: -5 }
+        ]
+      },
+      {
+        id: "2",
+        name: "Кофе",
+        price: 30,
+        additions: [
+          { id: "4", name: "Сахар", price: 0 },
+          { id: "5", name: "Сироп", price: 3 }
+        ]
+      },
+      { id: "3", name: "Кола", price: 15 }
+    ],
+    order: []
   };
 
   render() {
-    const { students } = this.state;
-    const presentStudents = _.filter(students, { isAbsent: false });
-    const absentStudents = _.filter(students, { isAbsent: true });
-
     return (
-      <>
-        <Persist
-          name="app"
-          data={this.state}
-          debounce={500}
-          onMount={data => this.setState(data)}
+      <div>
+        <OrderForm
+          products={this.state.products}
+          onOrderSubmit={order => {
+            console.log(order);
+          }}
         />
-
-        <Header />
-
-        <div className={styles.appContainer}>
-          <div className={styles.studentsListsContainer}>
-            <div className={styles.studentsListContainer}>
-              <StudentsList
-                students={presentStudents}
-                actions={[
-                  {
-                    icon: "close",
-                    tooltip: "Отсутствует",
-                    onClick: (event, rowData) => {
-                      this.setAbsentStatus(rowData.id);
-                    }
-                  },
-                  {
-                    icon: "update",
-                    tooltip: "Сбросить",
-                    isFreeAction: true,
-                    onClick: this.resetAbsentStatus
-                  }
-                ]}
-              />
-            </div>
-
-            <StudentsList
-              title="Отсутствующие"
-              students={absentStudents}
-              actions={[
-                {
-                  icon: "add",
-                  tooltip: "Добавить обратно",
-                  onClick: (event, rowData) => {
-                    this.setPresentStatus(rowData.id);
-                  }
-                }
-              ]}
-            />
-          </div>
-
-          <div className={styles.randomAnswererContainer}>
-            <CenterText>
-              <RandomAnswerer
-                answerers={presentStudents}
-                onAnswer={(id, score) => {
-                  this.updateScore(id, score);
-                }}
-              />
-            </CenterText>
-          </div>
-        </div>
-      </>
+      </div>
     );
   }
 }
-
-export default App;
