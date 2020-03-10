@@ -28,11 +28,15 @@ class App extends React.Component {
     });
   };
 
-  updateScore(id, score) {
+  addScore(id, score) {
     this.updateStudent(id, student => ({
       score: student.score + score
     }));
   }
+
+  setScore = (id, score) => {
+    this.updateStudent(id, () => ({ score }));
+  };
 
   setAbsentStatus = id => {
     this.updateStudent(id, () => ({ isAbsent: true }));
@@ -91,6 +95,7 @@ class App extends React.Component {
                     onClick: this.resetAbsentStatus
                   }
                 ]}
+                onScoreUpdate={this.setScore}
               />
             </div>
 
@@ -114,7 +119,7 @@ class App extends React.Component {
               <RandomAnswerer
                 answerers={presentStudents}
                 onAnswer={(id, score) => {
-                  this.updateScore(id, score);
+                  this.addScore(id, score);
                 }}
               />
             </CenterText>
