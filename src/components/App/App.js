@@ -1,133 +1,43 @@
 import React from "react";
-import _ from "lodash";
-import { Persist } from "react-persist";
-import { getStudents } from "../../data/getStudents";
-import { RandomAnswerer } from "../RandomAnswerer/RandomAnswerer";
-import { StudentsList } from "../StudentsList/StudentsList";
-import { CenterText } from "../CenterText/CenterText";
-import { Header } from "../Header/Header";
-import styles from "./App.module.scss";
+import { OrderForm } from "../OrderForm/OrderForm";
+import { v4 as uuid } from "uuid";
 
-class App extends React.Component {
+export class App extends React.Component {
   state = {
-    students: getStudents()
-  };
-
-  updateStudent = (id, updater) => {
-    this.setState(state => {
-      return {
-        students: _.map(state.students, student => {
-          if (student.id !== id) return student;
-
-          return {
-            ...student,
-            ...updater(student)
-          };
-        })
-      };
-    });
-  };
-
-  addScore(id, score) {
-    this.updateStudent(id, student => ({
-      score: student.score + score
-    }));
-  }
-
-  setScore = (id, score) => {
-    this.updateStudent(id, () => ({ score }));
-  };
-
-  setAbsentStatus = id => {
-    this.updateStudent(id, () => ({ isAbsent: true }));
-  };
-
-  setPresentStatus = id => {
-    this.updateStudent(id, () => ({ isAbsent: false }));
-  };
-
-  resetAbsentStatus = () => {
-    this.setState(state => {
-      return {
-        students: _.map(state.students, student => {
-          return {
-            ...student,
-            isAbsent: false
-          };
-        })
-      };
-    });
+    products: [
+      {
+        id: uuid(),
+        name: "Шаурма",
+        price: 70,
+        additions: [
+          { id: uuid(), name: "Грибы", price: 5 },
+          { id: uuid(), name: "Сыр", price: 10 },
+          { id: uuid(), name: "Ананас", price: 15 }
+        ]
+      },
+      {
+        id: uuid(),
+        name: "Кофе",
+        price: 30,
+        additions: [
+          { id: uuid(), name: "Сахар", price: 0 },
+          { id: uuid(), name: "Сироп", price: 15 }
+        ]
+      },
+      { id: uuid(), name: "Кола", price: 10 }
+    ]
   };
 
   render() {
-    const { students } = this.state;
-    const presentStudents = _.filter(students, { isAbsent: false });
-    const absentStudents = _.filter(students, { isAbsent: true });
-
     return (
-      <>
-        <Persist
-          name="app"
-          data={this.state}
-          debounce={500}
-          onMount={data => this.setState(data)}
+      <div>
+        <OrderForm
+          products={this.state.products}
+          onSubmit={order => {
+            console.log(order);
+          }}
         />
-
-        <Header />
-
-        <div className={styles.appContainer}>
-          <div className={styles.studentsListsContainer}>
-            <div className={styles.studentsListContainer}>
-              <StudentsList
-                students={presentStudents}
-                actions={[
-                  {
-                    icon: "close",
-                    tooltip: "Отсутствует",
-                    onClick: (event, rowData) => {
-                      this.setAbsentStatus(rowData.id);
-                    }
-                  },
-                  {
-                    icon: "update",
-                    tooltip: "Сбросить",
-                    isFreeAction: true,
-                    onClick: this.resetAbsentStatus
-                  }
-                ]}
-                onScoreUpdate={this.setScore}
-              />
-            </div>
-
-            <StudentsList
-              title="Отсутствующие"
-              students={absentStudents}
-              actions={[
-                {
-                  icon: "add",
-                  tooltip: "Добавить обратно",
-                  onClick: (event, rowData) => {
-                    this.setPresentStatus(rowData.id);
-                  }
-                }
-              ]}
-            />
-          </div>
-
-          <div className={styles.randomAnswererContainer}>
-            <CenterText>
-              <RandomAnswerer
-                answerers={presentStudents}
-                onAnswer={(id, score) => {
-                  this.addScore(id, score);
-                }}
-              />
-            </CenterText>
-          </div>
-        </div>
-      </>
+      </div>
     );
   }
 }
-
-export default App;
