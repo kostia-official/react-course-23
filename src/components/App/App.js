@@ -7,10 +7,13 @@ import { StudentsList } from "../StudentsList/StudentsList";
 import { CenterText } from "../CenterText/CenterText";
 import { Header } from "../Header/Header";
 import styles from "./App.module.scss";
+import { Modal } from "../Modal/Modal";
+import { SetAbsentModalContent } from "../SetAbsentModalContent/SetAbsentModalContent";
 
 class App extends React.Component {
   state = {
-    students: getStudents()
+    students: getStudents(),
+    isShowSetAbsentModal: false
   };
 
   updateStudent = (id, updater) => {
@@ -59,6 +62,14 @@ class App extends React.Component {
     });
   };
 
+  openSetAbsentModal = () => {
+    this.setState({ isShowSetAbsentModal: true });
+  };
+
+  closeSetAbsentModal = () => {
+    this.setState({ isShowSetAbsentModal: false });
+  };
+
   render() {
     const { students } = this.state;
     const presentStudents = _.filter(students, { isAbsent: false });
@@ -75,10 +86,21 @@ class App extends React.Component {
 
         <Header />
 
+        {this.state.isShowSetAbsentModal && (
+          <Modal onClose={this.closeSetAbsentModal}>
+            <SetAbsentModalContent
+              students={students}
+              onSetAbsentStatus={this.setAbsentStatus}
+              onSetPresentStatus={this.setPresentStatus}
+            />
+          </Modal>
+        )}
+
         <div className={styles.appContainer}>
           <div className={styles.studentsListsContainer}>
             <div className={styles.studentsListContainer}>
               <StudentsList
+                title="Студенты"
                 students={presentStudents}
                 actions={[
                   {
@@ -93,6 +115,12 @@ class App extends React.Component {
                     tooltip: "Сбросить",
                     isFreeAction: true,
                     onClick: this.resetAbsentStatus
+                  },
+                  {
+                    icon: "open_in_new",
+                    tooltip: "Отметить отсутствующих",
+                    isFreeAction: true,
+                    onClick: this.openSetAbsentModal
                   }
                 ]}
                 onScoreUpdate={this.setScore}
