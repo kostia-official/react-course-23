@@ -1,6 +1,6 @@
 import React from "react";
 import _ from "lodash";
-import { Persist } from "react-persist";
+import { Persist } from "../Persist/Persist";
 import { getStudents } from "../../data/getStudents";
 import { RandomAnswerer } from "../RandomAnswerer/RandomAnswerer";
 import { StudentsList } from "../StudentsList/StudentsList";
