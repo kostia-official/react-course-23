@@ -1,47 +1,4 @@
-$breakpoint: 700px;
-
-@mixin mobile {
-  @media (max-width: #{$breakpoint}) {
-    @content;
-  }
-}
-
-@mixin desktop {
-  @media (min-width: #{$breakpoint}) {
-    @content;
-  }
-}
-
 .appContainer {
-  margin: 10px;
   display: flex;
-
-  @include mobile {
-    flex-direction: column-reverse;
-  }
-
-  @include desktop {
-    flex-direction: row;
-  }
-}
-
-.studentsListsContainer {
-  @include desktop {
-    width: 285px;
-    margin-right: 10px;
-  }
-}
-
-.studentsListContainer {
-  margin-bottom: 10px;
-}
-
-.randomAnswererContainer {
-  @include mobile {
-    margin-bottom: 10px;
-  }
-
-  @include desktop {
-    flex-grow: 1;
-  }
+  flex-wrap: wrap;
 }
