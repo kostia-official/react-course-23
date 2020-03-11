@@ -1,0 +1,11 @@
+.container {
+  position: relative;
+  line-height: 0;
+}
+
+.secondsText {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}

@@ -9,6 +9,7 @@ import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import CardActions from "@material-ui/core/CardActions";
+import { CountdownSpinner } from "../CountdownSpinner/CountdownSpinner";
 
 const SCORES = {
   answer: 10,
@@ -17,24 +18,61 @@ const SCORES = {
 
 export class RandomAnswerer extends React.PureComponent {
   state = {
-    isHideStudent: true,
-    ...RandomAnswerer.getRandomData(this.props.answerers, titles)
+    isShowStudent: false,
+    isShowCountdown: false,
+    randomTitle: this.getRandomTitle()
   };
 
-  generateRandomAnswerer = () => {
-    this.setState(RandomAnswerer.getRandomData(this.props.answerers, titles));
-  };
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps === this.props) return;
 
-  static getRandomData(answerers, titles) {
-    return {
-      randomAnswerer: _.sample(answerers),
-      randomTitle: _.sample(titles)
-    };
+    this.setState({
+      randomAnswerer: this.getRandomAnswerer(),
+      isShowStudent: false
+    });
   }
 
+  generateNextRandomAnswerer = () => {
+    this.setState({
+      isShowCountdown: true,
+      isShowStudent: false,
+      randomTitle: this.getRandomTitle(),
+      randomAnswerer: this.getRandomAnswerer()
+    });
+  };
+
+  getRandomAnswerer() {
+    return _.sample(this.props.answerers);
+  }
+
+  getRandomTitle() {
+    return _.sample(titles);
+  }
+
+  startCountdown = () => {
+    this.setState({
+      isShowCountdown: true
+    });
+  };
+
+  onCountdownFinish = () => {
+    this.setState({
+      isShowCountdown: false,
+      isShowStudent: true
+    });
+  };
+
   render() {
-    console.log("render");
-    const { isHideStudent, randomTitle, randomAnswerer } = this.state;
+    const {
+      isShowStudent,
+      isShowCountdown,
+      randomTitle,
+      randomAnswerer
+    } = this.state;
+
+    if (!randomAnswerer) return <div />;
+
+    const isShowRevealButton = !isShowStudent && !isShowCountdown;
 
     return (
       <Card>
@@ -45,34 +83,30 @@ export class RandomAnswerer extends React.PureComponent {
             </Typography>
 
             <div className={styles.answererContainer}>
-              <div
-                id="random-answerer"
-                className={isHideStudent ? styles.hide : ""}
-              >
-                <Typography color="textSecondary">
-                  {randomAnswerer.name}
-                </Typography>
-              </div>
+              {isShowStudent && (
+                <div id="random-answerer">
+                  <Typography color="textSecondary">
+                    {randomAnswerer.name}
+                  </Typography>
+                </div>
+              )}
 
-              <div
-                id="show-button"
-                className={isHideStudent ? "" : styles.hide}
-              >
-                <Button
-                  size="small"
-                  onClick={() => {
-                    this.setState({
-                      isHideStudent: false,
-                      ...RandomAnswerer.getRandomData(
-                        this.props.answerers,
-                        titles
-                      )
-                    });
-                  }}
-                >
-                  Показать
-                </Button>
-              </div>
+              {isShowCountdown && (
+                <div>
+                  <CountdownSpinner
+                    timeSeconds={3}
+                    onFinish={this.onCountdownFinish}
+                  />
+                </div>
+              )}
+
+              {isShowRevealButton && (
+                <div>
+                  <Button size="small" onClick={this.startCountdown}>
+                    Показать
+                  </Button>
+                </div>
+              )}
             </div>
           </CardContent>
         </div>
@@ -93,7 +127,7 @@ export class RandomAnswerer extends React.PureComponent {
           >
             Ответил с подсказкой +{SCORES.answerWithHint}
           </Button>
-          <Button size="small" onClick={this.generateRandomAnswerer}>
+          <Button size="small" onClick={this.generateNextRandomAnswerer}>
             Следующий
           </Button>
         </CardActions>
