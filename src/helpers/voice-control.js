@@ -3,7 +3,7 @@ export class VoiceControl {
     this.lang = lang;
   }
 
-  listen = ({ timeout = 3000, word, onRecognize, onTimeout }) => {
+  listen = ({ timeout = 4000, text, onRecognize, onTimeout }) => {
     const Recognition = window.webkitSpeechRecognition;
     this.recognition = new Recognition();
 
@@ -17,7 +17,7 @@ export class VoiceControl {
     }, timeout);
 
     this.recognition.onresult = event => {
-      if (String(event.results.item(0).item(0).transcript).includes(word)) {
+      if (String(event.results.item(0).item(0).transcript).includes(text)) {
         clearTimeout(this.timeoutListener);
         this.recognition.stop();
         onRecognize && onRecognize();

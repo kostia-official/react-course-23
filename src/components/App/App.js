@@ -7,8 +7,8 @@ import { StudentsList } from "../StudentsList/StudentsList";
 import { CenterText } from "../CenterText/CenterText";
 import { Header } from "../Header/Header";
 import styles from "./App.module.scss";
-import { Modal } from "../Modal/Modal";
 import { SetAbsentModalContent } from "../SetAbsentModalContent/SetAbsentModalContent";
+import {CardModal} from "../CardModal/CardModal";
 
 class App extends React.Component {
   state = {
@@ -87,13 +87,13 @@ class App extends React.Component {
         <Header />
 
         {this.state.isShowSetAbsentModal && (
-          <Modal onClose={this.closeSetAbsentModal}>
+          <CardModal onClose={this.closeSetAbsentModal}>
             <SetAbsentModalContent
               students={students}
               onSetAbsentStatus={this.setAbsentStatus}
               onSetPresentStatus={this.setPresentStatus}
             />
-          </Modal>
+          </CardModal>
         )}
 
         <div className={styles.appContainer}>

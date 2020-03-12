@@ -30,6 +30,8 @@ export class SetAbsentModalContent extends React.PureComponent {
         status: null
       };
     });
+
+    this.voiceControl.clearListeners();
   };
 
   getCurrentStudent = () => {
@@ -41,14 +43,13 @@ export class SetAbsentModalContent extends React.PureComponent {
     if (!currentStudent) return;
 
     this.voiceControl.speak({
-      text: currentStudent.name,
-      onEnd: () => {
-        this.voiceControl.listen({
-          word: "есть",
-          onRecognize: () => this.setState({ status: "present" }),
-          onTimeout: () => this.setState({ status: "absent" })
-        });
-      }
+      text: currentStudent.name
+    });
+
+    this.voiceControl.listen({
+      text: "есть",
+      onRecognize: () => this.setState({ status: "present" }),
+      onTimeout: () => this.setState({ status: "absent" })
     });
   };
 
