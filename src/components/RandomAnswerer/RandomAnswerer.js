@@ -9,6 +9,7 @@ import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import CardActions from "@material-ui/core/CardActions";
+import { Countdown } from "../Countdown/Countdown";
 
 const SCORES = {
   answer: 10,
@@ -17,12 +18,31 @@ const SCORES = {
 
 export class RandomAnswerer extends React.PureComponent {
   state = {
-    isHideStudent: true,
+    isShowStudent: false,
+    isShowCountdown: false,
     ...RandomAnswerer.getRandomData(this.props.answerers, titles)
   };
 
   generateRandomAnswerer = () => {
-    this.setState(RandomAnswerer.getRandomData(this.props.answerers, titles));
+    this.setState({
+      isShowCountdown: true,
+      isShowStudent: false,
+      ...RandomAnswerer.getRandomData(this.props.answerers, titles)
+    });
+  };
+
+  onCountdownFinish = () => {
+    this.setState({
+      isShowCountdown: false,
+      isShowStudent: true
+    });
+  };
+
+  showCountdown = () => {
+    this.setState({
+      isShowCountdown: true,
+      ...RandomAnswerer.getRandomData(this.props.answerers, titles)
+    });
   };
 
   static getRandomData(answerers, titles) {
@@ -33,8 +53,9 @@ export class RandomAnswerer extends React.PureComponent {
   }
 
   render() {
-    console.log("render");
-    const { isHideStudent, randomTitle, randomAnswerer } = this.state;
+    const { isShowStudent, randomTitle, randomAnswerer } = this.state;
+    const isShowRevealButton =
+      !this.state.isShowCountdown && !this.state.isShowStudent;
 
     return (
       <Card>
@@ -45,34 +66,25 @@ export class RandomAnswerer extends React.PureComponent {
             </Typography>
 
             <div className={styles.answererContainer}>
-              <div
-                id="random-answerer"
-                className={isHideStudent ? styles.hide : ""}
-              >
-                <Typography color="textSecondary">
-                  {randomAnswerer.name}
-                </Typography>
-              </div>
+              {isShowStudent && (
+                <div id="random-answerer">
+                  <Typography color="textSecondary">
+                    {randomAnswerer.name}
+                  </Typography>
+                </div>
+              )}
 
-              <div
-                id="show-button"
-                className={isHideStudent ? "" : styles.hide}
-              >
-                <Button
-                  size="small"
-                  onClick={() => {
-                    this.setState({
-                      isHideStudent: false,
-                      ...RandomAnswerer.getRandomData(
-                        this.props.answerers,
-                        titles
-                      )
-                    });
-                  }}
-                >
-                  Показать
-                </Button>
-              </div>
+              {this.state.isShowCountdown && (
+                <Countdown seconds={3} onFinish={this.onCountdownFinish} />
+              )}
+
+              {isShowRevealButton && (
+                <div id="show-button">
+                  <Button size="small" onClick={this.showCountdown}>
+                    Показать
+                  </Button>
+                </div>
+              )}
             </div>
           </CardContent>
         </div>
