@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 
 import MaterialTable from "material-table";
-import { InputBase } from "@material-ui/core";
+import { ControlledInput } from "../ControlledInput/ControlledInput";
 
 export const StudentsList = ({
   students,
@@ -22,11 +22,16 @@ export const StudentsList = ({
           defaultSort: "desc",
           render: ({ id, score }) => {
             return (
-              <InputBase
+              <ControlledInput
+                key={id}
                 type="number"
                 value={score}
-                onChange={e => {
-                  onScoreUpdate(id, Number(e.target.value));
+                onValueUpdated={updatedScore => {
+                  onScoreUpdate({
+                    id,
+                    oldScore: score,
+                    newScore: Number(updatedScore)
+                  });
                 }}
               />
             );

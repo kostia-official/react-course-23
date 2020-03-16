@@ -1,8 +1,6 @@
 import React from "react";
 import _ from "lodash";
 import titles from "../../data/titles";
-import PropTypes from "prop-types";
-
 import styles from "./RandomAnswerer.module.scss";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
@@ -17,17 +15,22 @@ const SCORES = {
 };
 
 export class RandomAnswerer extends React.PureComponent {
-  state = {
-    isShowStudent: false,
-    isShowCountdown: false,
-    ...RandomAnswerer.getRandomData(this.props.answerers, titles)
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      isShowStudent: false,
+      isShowCountdown: false,
+      randomTitle: this.getRandomTitle()
+    };
+  }
 
   generateRandomAnswerer = () => {
     this.setState({
       isShowCountdown: true,
       isShowStudent: false,
-      ...RandomAnswerer.getRandomData(this.props.answerers, titles)
+      randomTitle: this.getRandomTitle(),
+      randomAnswerer: this.getRandomAnswerer()
     });
   };
 
@@ -41,16 +44,23 @@ export class RandomAnswerer extends React.PureComponent {
   showCountdown = () => {
     this.setState({
       isShowCountdown: true,
-      ...RandomAnswerer.getRandomData(this.props.answerers, titles)
+      randomAnswerer: this.getRandomAnswerer()
     });
   };
 
-  static getRandomData(answerers, titles) {
-    return {
-      randomAnswerer: _.sample(answerers),
-      randomTitle: _.sample(titles)
-    };
-  }
+  getRandomAnswerer = () => {
+    return _.sample(this.props.answerers);
+  };
+
+  getRandomTitle = () => {
+    return _.sample(titles);
+  };
+
+  onAnswer = (randomAnswerer, score) => {
+    if (!randomAnswerer) return;
+
+    this.props.onAnswer(randomAnswerer.id, score);
+  };
 
   render() {
     const { isShowStudent, randomTitle, randomAnswerer } = this.state;
@@ -69,7 +79,9 @@ export class RandomAnswerer extends React.PureComponent {
               {isShowStudent && (
                 <div id="random-answerer">
                   <Typography color="textSecondary">
-                    {randomAnswerer.name}
+                    {randomAnswerer
+                      ? randomAnswerer.name
+                      : "Так никого же нет :("}
                   </Typography>
                 </div>
               )}
@@ -92,7 +104,7 @@ export class RandomAnswerer extends React.PureComponent {
           <Button
             size="small"
             onClick={() =>
-              this.props.onAnswer(randomAnswerer.id, SCORES.answer)
+              this.onAnswer(randomAnswerer, SCORES.answer)
             }
           >
             Ответил +{SCORES.answer}
@@ -100,7 +112,7 @@ export class RandomAnswerer extends React.PureComponent {
           <Button
             size="small"
             onClick={() =>
-              this.props.onAnswer(randomAnswerer.id, SCORES.answerWithHint)
+              this.onAnswer(randomAnswerer, SCORES.answerWithHint)
             }
           >
             Ответил с подсказкой +{SCORES.answerWithHint}
@@ -113,14 +125,3 @@ export class RandomAnswerer extends React.PureComponent {
     );
   }
 }
-
-RandomAnswerer.propTypes = {
-  answerers: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      name: PropTypes.string.isRequired,
-      score: PropTypes.number.isRequired
-    }).isRequired
-  ).isRequired,
-  onAnswer: PropTypes.func
-};

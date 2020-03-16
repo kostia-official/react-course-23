@@ -1,20 +1,37 @@
 import React from "react";
 import _ from "lodash";
-import { getStudents } from "../../data/getStudents";
 import { RandomAnswerer } from "../RandomAnswerer/RandomAnswerer";
 import { StudentsList } from "../StudentsList/StudentsList";
 import { CenterText } from "../CenterText/CenterText";
 import { Header } from "../Header/Header";
 import styles from "./App.module.scss";
-import { Persist } from "../Persist/Persist";
 import { CardModal } from "../CardModal/CardModal";
-import {SetAbsentModalContent} from "../SetAbsentModalContent/SetAbsentModalContent";
+import { SetAbsentModalContent } from "../SetAbsentModalContent/SetAbsentModalContent";
+import * as api from "../../api";
+import { ErrorMessage } from "../ErrorMessage/ErrorMessage";
+import { Spinner } from "../Spinner/Spinner";
 
 class App extends React.Component {
   state = {
-    students: getStudents(),
-    isShowSetAbsentModal: false
+    students: [],
+    isShowSetAbsentModal: false,
+    errorMessage: ""
   };
+
+  async componentDidMount() {
+    try {
+      this.setState({ isLoading: true });
+      const students = await api.getStudents();
+
+      this.setState({
+        students
+      });
+    } catch (err) {
+      this.showErrorMessage(err);
+    } finally {
+      this.setState({ isLoading: false });
+    }
+  }
 
   updateStudent = (id, updater) => {
     this.setState(state => {
@@ -31,35 +48,73 @@ class App extends React.Component {
     });
   };
 
-  addScore(id, score) {
-    this.updateStudent(id, student => ({
-      score: student.score + score
-    }));
+  async addScore(id, score) {
+    try {
+      this.updateStudent(id, student => ({
+        score: student.score + score
+      }));
+
+      await api.addScore(id, score);
+    } catch (err) {
+      this.showErrorMessage(err);
+    }
   }
 
-  setScore = (id, score) => {
-    this.updateStudent(id, () => ({ score }));
+  setScore = async ({ id, oldScore, newScore }) => {
+    try {
+      this.updateStudent(id, () => ({ score: newScore }));
+
+      await api.addScore(id, newScore - oldScore);
+    } catch (err) {
+      this.showErrorMessage(err);
+    }
   };
 
-  setAbsentStatus = id => {
-    this.updateStudent(id, () => ({ isAbsent: true }));
+  setAbsentStatus = async id => {
+    try {
+      this.updateStudent(id, () => ({ isPresent: false }));
+
+      await api.setAbsentStatus(id);
+    } catch (err) {
+      this.showErrorMessage(err);
+    }
   };
 
-  setPresentStatus = id => {
-    this.updateStudent(id, () => ({ isAbsent: false }));
+  setPresentStatus = async id => {
+    try {
+      this.updateStudent(id, () => ({ isPresent: true }));
+
+      await api.setPresentStatus(id);
+    } catch (err) {
+      this.showErrorMessage(err);
+    }
   };
 
-  resetAbsentStatus = () => {
-    this.setState(state => {
-      return {
-        students: _.map(state.students, student => {
-          return {
-            ...student,
-            isAbsent: false
-          };
+  resetAbsentStatus = async () => {
+    try {
+      const students = { ...this.state.students };
+
+      this.setState(state => {
+        return {
+          students: _.map(state.students, student => {
+            return {
+              ...student,
+              isPresent: true
+            };
+          })
+        };
+      });
+
+      await Promise.all(
+        _.map(students, async student => {
+          if (!student.isPresent) {
+            await api.setPresentStatus(student.id);
+          }
         })
-      };
-    });
+      );
+    } catch (err) {
+      this.showErrorMessage(err);
+    }
   };
 
   openSetAbsentModal = () => {
@@ -74,20 +129,34 @@ class App extends React.Component {
     });
   };
 
+  onErrorClose = () => {
+    this.setState({
+      errorMessage: ""
+    });
+  };
+
+  showErrorMessage = err => {
+    this.setState({
+      errorMessage: _.get(err, "response.data.message", err.message)
+    });
+  };
+
   render() {
-    const { students } = this.state;
-    const presentStudents = _.filter(students, { isAbsent: false });
-    const absentStudents = _.filter(students, { isAbsent: true });
+    const { students, isLoading } = this.state;
+    const presentStudents = _.filter(students, { isPresent: true });
+    const absentStudents = _.filter(students, { isPresent: false });
+
+    if (isLoading) {
+      return (
+        <>
+          <Spinner />
+          <Header />
+        </>
+      );
+    }
 
     return (
       <>
-        <Persist
-          name="app"
-          data={this.state}
-          // debounce={500}
-          onMount={data => this.setState(data)}
-        />
-
         {this.state.isShowSetAbsentModal && (
           <CardModal onClose={this.closeSetAbsentModal}>
             <SetAbsentModalContent
@@ -97,6 +166,12 @@ class App extends React.Component {
             />
           </CardModal>
         )}
+
+        <ErrorMessage
+          errorMessage={this.state.errorMessage}
+          isShow={!!this.state.errorMessage}
+          onClose={this.onErrorClose}
+        />
 
         <Header />
 
