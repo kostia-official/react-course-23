@@ -1,8 +1,6 @@
 import React from "react";
 import _ from "lodash";
 import titles from "../../data/titles";
-import PropTypes from "prop-types";
-
 import styles from "./RandomAnswerer.module.scss";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
@@ -113,14 +111,3 @@ export class RandomAnswerer extends React.PureComponent {
     );
   }
 }
-
-RandomAnswerer.propTypes = {
-  answerers: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      name: PropTypes.string.isRequired,
-      score: PropTypes.number.isRequired
-    }).isRequired
-  ).isRequired,
-  onAnswer: PropTypes.func
-};

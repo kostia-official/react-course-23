@@ -1,8 +1,6 @@
 import React from "react";
-import PropTypes from "prop-types";
-
 import MaterialTable from "material-table";
-import { InputBase } from "@material-ui/core";
+import { ControlledInput } from "../ControlledInput/ControlledInput";
 
 export const StudentsList = ({
   students,
@@ -22,11 +20,12 @@ export const StudentsList = ({
           defaultSort: "desc",
           render: ({ id, score }) => {
             return (
-              <InputBase
+              <ControlledInput
+                key={id}
                 type="number"
                 value={score}
-                onChange={e => {
-                  onScoreUpdate(id, Number(e.target.value));
+                onValueUpdate={value => {
+                  onScoreUpdate(id, Number(value) - score);
                 }}
               />
             );
@@ -50,14 +49,4 @@ export const StudentsList = ({
       actions={actions}
     />
   );
-};
-
-StudentsList.propTypes = {
-  students: PropTypes.arrayOf(
-    PropTypes.shape({
-      name: PropTypes.string.isRequired
-    }).isRequired
-  ).isRequired,
-  title: PropTypes.string,
-  actions: PropTypes.arrayOf(PropTypes.object.isRequired).isRequired
 };
