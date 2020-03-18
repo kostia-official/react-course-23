@@ -10,6 +10,7 @@ import { CardModal } from "../CardModal/CardModal";
 import { SetAbsentModalContent } from "../SetAbsentModalContent/SetAbsentModalContent";
 import { Spinner } from "../Spinner/Spinner";
 import { ErrorMessage } from "../ErrorMessage/ErrorMessage";
+import { UnauthorizedErrorMessage } from "../UnauthorizedErrorMessage/UnauthorizedErrorMessage";
 
 class App extends React.Component {
   state = {
@@ -20,22 +21,22 @@ class App extends React.Component {
   };
 
   async componentDidMount() {
-    await this.syncStudents();
-  }
-
-  syncStudents = async () => {
-    this.setState({ isLoading: true });
     try {
-      const students = await api.getStudents();
-
-      this.setState({
-        students
-      });
+      this.setState({ isLoading: true });
+      await this.syncStudents();
     } catch (err) {
       await this.setErrorMessage(err);
     } finally {
       this.setState({ isLoading: false });
     }
+  }
+
+  syncStudents = async () => {
+    const students = await api.getStudents();
+
+    this.setState({
+      students
+    });
   };
 
   updateStudent = (id, updater) => {
@@ -125,8 +126,16 @@ class App extends React.Component {
   };
 
   setErrorMessage = async err => {
+    const isUnauthorized = _.get(err, "response.status") === 401;
+
+    const errorMessage = isUnauthorized ? (
+      <UnauthorizedErrorMessage />
+    ) : (
+      _.get(err, "response.data.message", err.message)
+    );
+
     this.setState({
-      errorMessage: _.get(err, "response.data.message", err.message)
+      errorMessage
     });
 
     await this.syncStudents();
