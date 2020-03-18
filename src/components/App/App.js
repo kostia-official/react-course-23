@@ -1,23 +1,23 @@
-import React from "react";
-import _ from "lodash";
-import * as api from "../../api";
-import { RandomAnswerer } from "../RandomAnswerer/RandomAnswerer";
-import { StudentsList } from "../StudentsList/StudentsList";
-import { CenterText } from "../CenterText/CenterText";
-import { Header } from "../Header/Header";
-import styles from "./App.module.scss";
-import { CardModal } from "../CardModal/CardModal";
-import { SetAbsentModalContent } from "../SetAbsentModalContent/SetAbsentModalContent";
-import { Spinner } from "../Spinner/Spinner";
-import { ErrorMessage } from "../ErrorMessage/ErrorMessage";
-import { UnauthorizedErrorMessage } from "../UnauthorizedErrorMessage/UnauthorizedErrorMessage";
+import React from 'react';
+import _ from 'lodash';
+import * as api from '../../api';
+import { RandomAnswerer } from '../RandomAnswerer/RandomAnswerer';
+import { StudentsList } from '../StudentsList/StudentsList';
+import { CenterText } from '../CenterText/CenterText';
+import { Header } from '../Header/Header';
+import styles from './App.module.scss';
+import { CardModal } from '../CardModal/CardModal';
+import { SetAbsentModalContent } from '../SetAbsentModalContent/SetAbsentModalContent';
+import { Spinner } from '../Spinner/Spinner';
+import { ErrorMessage } from '../ErrorMessage/ErrorMessage';
+import { UnauthorizedErrorMessage } from '../UnauthorizedErrorMessage/UnauthorizedErrorMessage';
 
 class App extends React.Component {
   state = {
     students: [],
     isShowSetAbsentModal: false,
     isLoading: true,
-    errorMessage: ""
+    errorMessage: ''
   };
 
   async componentDidMount() {
@@ -40,9 +40,9 @@ class App extends React.Component {
   };
 
   updateStudent = (id, updater) => {
-    this.setState(state => {
+    this.setState((state) => {
       return {
-        students: _.map(state.students, student => {
+        students: _.map(state.students, (student) => {
           if (student.id !== id) return student;
 
           return {
@@ -56,7 +56,7 @@ class App extends React.Component {
 
   addScore = async (id, score) => {
     try {
-      this.updateStudent(id, student => ({
+      this.updateStudent(id, (student) => ({
         score: student.score + score
       }));
 
@@ -66,7 +66,7 @@ class App extends React.Component {
     }
   };
 
-  setAbsentStatus = async id => {
+  setAbsentStatus = async (id) => {
     try {
       this.updateStudent(id, () => ({ isPresent: false }));
 
@@ -76,7 +76,7 @@ class App extends React.Component {
     }
   };
 
-  setPresentStatus = async id => {
+  setPresentStatus = async (id) => {
     try {
       this.updateStudent(id, () => ({ isPresent: true }));
 
@@ -90,9 +90,9 @@ class App extends React.Component {
     try {
       const students = _.cloneDeep(this.state.students);
 
-      this.setState(state => {
+      this.setState((state) => {
         return {
-          students: _.map(state.students, student => {
+          students: _.map(state.students, (student) => {
             return {
               ...student,
               isPresent: true
@@ -125,13 +125,13 @@ class App extends React.Component {
     });
   };
 
-  setErrorMessage = async err => {
-    const isUnauthorized = _.get(err, "response.status") === 401;
+  setErrorMessage = async (err) => {
+    const isUnauthorized = _.get(err, 'response.status') === 401;
 
     const errorMessage = isUnauthorized ? (
       <UnauthorizedErrorMessage />
     ) : (
-      _.get(err, "response.data.message", err.message)
+      _.get(err, 'response.data.message', err.message)
     );
 
     this.setState({
@@ -143,7 +143,7 @@ class App extends React.Component {
 
   onErrorClose = () => {
     this.setState({
-      errorMessage: ""
+      errorMessage: ''
     });
   };
 
@@ -189,21 +189,21 @@ class App extends React.Component {
                 students={presentStudents}
                 actions={[
                   {
-                    icon: "close",
-                    tooltip: "Отсутствует",
+                    icon: 'close',
+                    tooltip: 'Отсутствует',
                     onClick: (event, rowData) => {
                       this.setAbsentStatus(rowData.id);
                     }
                   },
                   {
-                    icon: "update",
-                    tooltip: "Сбросить",
+                    icon: 'update',
+                    tooltip: 'Сбросить',
                     isFreeAction: true,
                     onClick: this.resetAbsentStatus
                   },
                   {
-                    icon: "launch",
-                    tooltip: "Отметить отсутствующих",
+                    icon: 'launch',
+                    tooltip: 'Отметить отсутствующих',
                     isFreeAction: true,
                     onClick: this.openSetAbsentModal
                   }
@@ -217,8 +217,8 @@ class App extends React.Component {
               students={absentStudents}
               actions={[
                 {
-                  icon: "add",
-                  tooltip: "Добавить обратно",
+                  icon: 'add',
+                  tooltip: 'Добавить обратно',
                   onClick: (event, rowData) => {
                     this.setPresentStatus(rowData.id);
                   }

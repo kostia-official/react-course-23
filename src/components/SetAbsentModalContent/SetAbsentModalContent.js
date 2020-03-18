@@ -1,10 +1,10 @@
-import React from "react";
-import CardContent from "@material-ui/core/CardContent";
-import Typography from "@material-ui/core/Typography";
-import CardActions from "@material-ui/core/CardActions";
-import Button from "@material-ui/core/Button";
-import styles from "./SetAbsentModalContent.module.scss";
-import { VoiceControl } from "../../helpers/voice-control";
+import React from 'react';
+import CardContent from '@material-ui/core/CardContent';
+import Typography from '@material-ui/core/Typography';
+import CardActions from '@material-ui/core/CardActions';
+import Button from '@material-ui/core/Button';
+import styles from './SetAbsentModalContent.module.scss';
+import { VoiceControl } from '../../helpers/voice-control';
 
 export class SetAbsentModalContent extends React.Component {
   constructor() {
@@ -23,7 +23,7 @@ export class SetAbsentModalContent extends React.Component {
   };
 
   nextStudent = () => {
-    this.setState(state => ({
+    this.setState((state) => ({
       studentIndex: state.studentIndex + 1,
       status: null
     }));
@@ -54,9 +54,9 @@ export class SetAbsentModalContent extends React.Component {
     });
 
     this.voiceControl.listen({
-      text: "есть",
-      onRecognize: () => this.setState({ status: "present" }),
-      onTimeout: () => this.setState({ status: "absent" })
+      text: 'есть',
+      onRecognize: () => this.setState({ status: 'present' }),
+      onTimeout: () => this.setState({ status: 'absent' })
     });
 
     // this.voiceControl.clearListeners();
@@ -82,22 +82,20 @@ export class SetAbsentModalContent extends React.Component {
     return (
       <div>
         <CardContent className={styles.container}>
-          <Typography variant="h5">
-            {student ? student.name : "Готово"}
-          </Typography>
+          <Typography variant="h5">{student ? student.name : 'Готово'}</Typography>
         </CardContent>
         {student && (
           <CardActions className={styles.buttonsWrapper}>
             <Button
               size="small"
-              color={this.state.status === "absent" ? "primary" : "default"}
+              color={this.state.status === 'absent' ? 'primary' : 'default'}
               onClick={this.onSetAbsentClick}
             >
               Отсутствует
             </Button>
             <Button
               size="small"
-              color={this.state.status === "present" ? "primary" : "default"}
+              color={this.state.status === 'present' ? 'primary' : 'default'}
               onClick={this.onSetPresentClick}
             >
               Присутствует

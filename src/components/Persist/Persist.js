@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 export class Persist extends React.Component {
   componentDidMount() {

@@ -1,5 +1,5 @@
-import React from "react";
-import { CenterText } from "../CenterText/CenterText";
+import React from 'react';
+import { CenterText } from '../CenterText/CenterText';
 
 export const UnauthorizedErrorMessage = () => (
   <CenterText>

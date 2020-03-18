@@ -1,6 +1,6 @@
-import React from "react";
-import _ from "lodash";
-import { InputBase } from "@material-ui/core";
+import React from 'react';
+import _ from 'lodash';
+import { InputBase } from '@material-ui/core';
 
 export class ControlledInput extends React.Component {
   constructor(props) {
@@ -11,12 +11,9 @@ export class ControlledInput extends React.Component {
     };
   }
 
-  debouncedValueUpdate = _.debounce(
-    value => this.props.onValueUpdate(value),
-    1000
-  );
+  debouncedValueUpdate = _.debounce((value) => this.props.onValueUpdate(value), 1000);
 
-  onChange = e => {
+  onChange = (e) => {
     this.setState({
       value: e.target.value
     });
@@ -32,12 +29,6 @@ export class ControlledInput extends React.Component {
   }
 
   render() {
-    return (
-      <InputBase
-        type={this.props.type}
-        value={this.state.value}
-        onChange={this.onChange}
-      />
-    );
+    return <InputBase type={this.props.type} value={this.state.value} onChange={this.onChange} />;
   }
 }

@@ -16,8 +16,11 @@
     "styled-components": "^5.0.1"
   },
   "devDependencies": {
+    "husky": "^4.2.3",
+    "lint-staged": "^10.0.8",
     "netlify": "^3.1.0",
-    "node-sass": "^4.13.1"
+    "node-sass": "^4.13.1",
+    "prettier": "^1.19.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -25,11 +28,22 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "deploy": "npm run build && netlify deploy",
-    "deploy:prod": "npm run build && netlify deploy --prod"
+    "deploy:prod": "npm run build && netlify deploy --prod",
+    "prettier": "prettier --write 'src/**/*.{js,jsx,ts,tsx,json,css,scss,md}'"
   },
   "eslintConfig": {
     "extends": "react-app"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+   "lint-staged": {
+     "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+       "prettier --write"
+     ]
+   },
   "browserslist": {
     "production": [
       ">0.2%",

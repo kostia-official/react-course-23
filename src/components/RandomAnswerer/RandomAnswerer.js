@@ -1,13 +1,13 @@
-import React from "react";
-import _ from "lodash";
-import titles from "../../data/titles";
-import styles from "./RandomAnswerer.module.scss";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
-import CardActions from "@material-ui/core/CardActions";
-import { Countdown } from "../Countdown/Countdown";
+import React from 'react';
+import _ from 'lodash';
+import titles from '../../data/titles';
+import styles from './RandomAnswerer.module.scss';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import CardActions from '@material-ui/core/CardActions';
+import { Countdown } from '../Countdown/Countdown';
 
 const SCORES = {
   answer: 10,
@@ -64,8 +64,7 @@ export class RandomAnswerer extends React.PureComponent {
 
   render() {
     const { isShowStudent, randomTitle, randomAnswerer } = this.state;
-    const isShowRevealButton =
-      !this.state.isShowCountdown && !this.state.isShowStudent;
+    const isShowRevealButton = !this.state.isShowCountdown && !this.state.isShowStudent;
 
     return (
       <Card>
@@ -79,9 +78,7 @@ export class RandomAnswerer extends React.PureComponent {
               {isShowStudent && (
                 <div id="random-answerer">
                   <Typography color="textSecondary">
-                    {randomAnswerer
-                      ? randomAnswerer.name
-                      : "Нужно отметить присутствующих"}
+                    {randomAnswerer ? randomAnswerer.name : 'Нужно отметить присутствующих'}
                   </Typography>
                 </div>
               )}
@@ -101,20 +98,10 @@ export class RandomAnswerer extends React.PureComponent {
           </CardContent>
         </div>
         <CardActions className={styles.actionsContainer}>
-          <Button
-            size="small"
-            onClick={() =>
-              this.onAnswer(randomAnswerer, SCORES.answer)
-            }
-          >
+          <Button size="small" onClick={() => this.onAnswer(randomAnswerer, SCORES.answer)}>
             Ответил +{SCORES.answer}
           </Button>
-          <Button
-            size="small"
-            onClick={() =>
-              this.onAnswer(randomAnswerer, SCORES.answerWithHint)
-            }
-          >
+          <Button size="small" onClick={() => this.onAnswer(randomAnswerer, SCORES.answerWithHint)}>
             Ответил с подсказкой +{SCORES.answerWithHint}
           </Button>
           <Button size="small" onClick={this.generateRandomAnswerer}>

@@ -1,5 +1,5 @@
-import React from "react";
+import React from 'react';
 
-export const CenterText = props => {
-  return <div style={{ textAlign: "center" }}>{props.children}</div>;
+export const CenterText = (props) => {
+  return <div style={{ textAlign: 'center' }}>{props.children}</div>;
 };
