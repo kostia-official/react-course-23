@@ -1,246 +1,98 @@
 import React from 'react';
-import _ from 'lodash';
-import * as api from '../../api';
-import { RandomAnswerer } from '../RandomAnswerer/RandomAnswerer';
-import { StudentsList } from '../StudentsList/StudentsList';
-import { CenterText } from '../CenterText/CenterText';
+import { Navigation } from '../Navigation/Navigation';
 import { Header } from '../Header/Header';
-import styles from './App.module.scss';
-import { CardModal } from '../CardModal/CardModal';
-import { SetAbsentModalContent } from '../SetAbsentModalContent/SetAbsentModalContent';
-import { Spinner } from '../Spinner/Spinner';
-import { ErrorMessage } from '../ErrorMessage/ErrorMessage';
-import { UnauthorizedErrorMessage } from '../UnauthorizedErrorMessage/UnauthorizedErrorMessage';
+import Home from '../Home/Home';
+import styled from 'styled-components';
+import { Persist } from '../Persist/Persist';
+import { Lessons } from '../Lessons/Lessons';
+import { Router, Route, Switch } from 'react-router-dom';
+import { Attendance } from '../Attendance/Attendance';
+import { NotFound } from '../NotFound/NotFound';
 
-class App extends React.Component {
-  state = {
-    students: [],
-    isShowSetAbsentModal: false,
-    isLoading: true,
-    errorMessage: ''
-  };
+import { createBrowserHistory } from 'history';
 
-  async componentDidMount() {
-    try {
-      this.setState({ isLoading: true });
-      await this.syncStudents();
-    } catch (err) {
-      await this.setErrorMessage(err);
-    } finally {
-      this.setState({ isLoading: false });
-    }
+const history = createBrowserHistory();
+
+const routes = [
+  {
+    path: '/',
+    component: <Home />,
+    icon: 'home',
+    name: 'Главная'
+  },
+  {
+    path: '/lessons',
+    component: <Lessons />,
+    icon: 'today',
+    name: 'Посещаемость'
   }
+];
 
-  syncStudents = async () => {
-    const students = await api.getStudents();
+const AppContainer = styled.div`
+  display: flex;
+`;
 
-    this.setState({
-      students
-    });
+const PageContainer = styled.div`
+  flex-grow: 1;
+  padding: 10px;
+`;
+
+export class App extends React.Component {
+  state = {
+    isNavigationExpanded: false
   };
 
-  updateStudent = (id, updater) => {
-    this.setState((state) => {
-      return {
-        students: _.map(state.students, (student) => {
-          if (student.id !== id) return student;
-
-          return {
-            ...student,
-            ...updater(student)
-          };
-        })
-      };
-    });
+  toggleNavigationExpand = () => {
+    this.setState((state) => ({
+      isNavigationExpanded: !state.isNavigationExpanded
+    }));
   };
 
-  addScore = async (id, score) => {
-    try {
-      this.updateStudent(id, (student) => ({
-        score: student.score + score
-      }));
-
-      await api.addScore(id, score);
-    } catch (err) {
-      await this.setErrorMessage(err);
-    }
+  onNavigationItemClick = ({ path }) => {
+    history.push(path);
   };
 
-  setAbsentStatus = async (id) => {
-    try {
-      this.updateStudent(id, () => ({ isPresent: false }));
-
-      await api.unsetPresentStatus(id);
-    } catch (err) {
-      await this.setErrorMessage(err);
-    }
-  };
-
-  setPresentStatus = async (id) => {
-    try {
-      this.updateStudent(id, () => ({ isPresent: true }));
-
-      await api.setPresentStatus(id);
-    } catch (err) {
-      await this.setErrorMessage(err);
-    }
-  };
-
-  resetAbsentStatus = async () => {
-    try {
-      const students = _.cloneDeep(this.state.students);
-
-      this.setState((state) => {
-        return {
-          students: _.map(state.students, (student) => {
-            return {
-              ...student,
-              isPresent: true
-            };
-          })
-        };
-      });
-
-      const promises = _.map(students, async ({ id, isPresent }) => {
-        if (!isPresent) {
-          await api.setPresentStatus(id);
-        }
-      });
-
-      await Promise.all(promises);
-    } catch (err) {
-      await this.setErrorMessage(err);
-    }
-  };
-
-  openSetAbsentModal = () => {
-    this.setState({
-      isShowSetAbsentModal: true
-    });
-  };
-
-  closeSetAbsentModal = () => {
-    this.setState({
-      isShowSetAbsentModal: false
-    });
-  };
-
-  setErrorMessage = async (err) => {
-    const isUnauthorized = _.get(err, 'response.status') === 401;
-
-    const errorMessage = isUnauthorized ? (
-      <UnauthorizedErrorMessage />
-    ) : (
-      _.get(err, 'response.data.message', err.message)
-    );
-
-    this.setState({
-      errorMessage
-    });
-
-    await this.syncStudents();
-  };
-
-  onErrorClose = () => {
-    this.setState({
-      errorMessage: ''
-    });
+  onLessonClick = (date) => {
+    history.push(`/lessons/attendance?date=${date}`);
   };
 
   render() {
-    const { students, isLoading, errorMessage } = this.state;
-    const presentStudents = _.filter(students, { isPresent: true });
-    const absentStudents = _.filter(students, { isPresent: false });
-
-    if (isLoading) {
-      return (
-        <div>
-          <Header />
-          <Spinner />
-        </div>
-      );
-    }
+    const { isNavigationExpanded } = this.state;
 
     return (
       <>
-        {this.state.isShowSetAbsentModal && (
-          <CardModal onClose={this.closeSetAbsentModal}>
-            <SetAbsentModalContent
-              students={students}
-              setAbsentStatus={this.setAbsentStatus}
-              setPresentStatus={this.setPresentStatus}
+        <Router history={history}>
+          <Persist
+            name="app"
+            data={{ isNavigationExpanded }}
+            onMount={(data) => this.setState(data)}
+          />
+
+          <Header onNavigationIconClick={this.toggleNavigationExpand} />
+
+          <AppContainer>
+            <Navigation
+              onClose={this.toggleNavigationExpand}
+              isExpanded={isNavigationExpanded}
+              items={routes}
+              // onItemClick={this.onNavigationItemClick}
             />
-          </CardModal>
-        )}
 
-        <ErrorMessage
-          isShow={!!errorMessage}
-          errorMessage={errorMessage}
-          onClose={this.onErrorClose}
-        />
-
-        <Header />
-
-        <div className={styles.appContainer}>
-          <div className={styles.studentsListsContainer}>
-            <div className={styles.studentsListContainer}>
-              <StudentsList
-                title="Студенты"
-                students={presentStudents}
-                actions={[
-                  {
-                    icon: 'close',
-                    tooltip: 'Отсутствует',
-                    onClick: (event, rowData) => {
-                      this.setAbsentStatus(rowData.id);
-                    }
-                  },
-                  {
-                    icon: 'update',
-                    tooltip: 'Сбросить',
-                    isFreeAction: true,
-                    onClick: this.resetAbsentStatus
-                  },
-                  {
-                    icon: 'launch',
-                    tooltip: 'Отметить отсутствующих',
-                    isFreeAction: true,
-                    onClick: this.openSetAbsentModal
-                  }
-                ]}
-                onScoreUpdate={this.addScore}
-              />
-            </div>
-
-            <StudentsList
-              title="Отсутствующие"
-              students={absentStudents}
-              actions={[
-                {
-                  icon: 'add',
-                  tooltip: 'Добавить обратно',
-                  onClick: (event, rowData) => {
-                    this.setPresentStatus(rowData.id);
-                  }
-                }
-              ]}
-            />
-          </div>
-
-          <div className={styles.randomAnswererContainer}>
-            <CenterText>
-              <RandomAnswerer
-                answerers={presentStudents}
-                onAnswer={(id, score) => {
-                  this.addScore(id, score);
-                }}
-              />
-            </CenterText>
-          </div>
-        </div>
+            <PageContainer>
+              <Switch>
+                <Route path="/" exact component={Home} />
+                <Route
+                  path="/lessons"
+                  exact
+                  render={(props) => <Lessons {...props} onLessonClick={this.onLessonClick} />}
+                />
+                <Route path="/lessons/attendance" exact component={Attendance} />
+                <Route path="*" component={NotFound} />
+              </Switch>
+            </PageContainer>
+          </AppContainer>
+        </Router>
       </>
     );
   }
 }
-
-export default App;

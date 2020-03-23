@@ -39,3 +39,9 @@ export const addScore = async (studentId, score) => {
     score
   });
 };
+
+export const getLessons = async () => {
+  const { data } = await api.get('/lessons');
+
+  return data;
+};
