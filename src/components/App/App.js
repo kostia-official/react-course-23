@@ -1,244 +1,99 @@
 import React from 'react';
-import _ from 'lodash';
-import * as api from '../../api';
-import { RandomAnswerer } from '../RandomAnswerer/RandomAnswerer';
-import { StudentsList } from '../StudentsList/StudentsList';
-import { CenterText } from '../CenterText/CenterText';
+import Home from '../Home/Home';
 import { Header } from '../Header/Header';
-import styles from './App.module.scss';
-import { CardModal } from '../CardModal/CardModal';
-import { SetAbsentModalContent } from '../SetAbsentModalContent/SetAbsentModalContent';
-import { Spinner } from '../Spinner/Spinner';
-import { ErrorMessage } from '../ErrorMessage/ErrorMessage';
-import { UnauthorizedErrorMessage } from '../UnauthorizedErrorMessage/UnauthorizedErrorMessage';
+import { Navigation } from '../Navigation/Navigation';
+import styled from 'styled-components';
+import { Persist } from '../Persist/Persist';
+import { Lessons } from '../Lessons/Lessons';
+import { Router, Route, Switch } from 'react-router-dom';
+import { LessonAttendance } from '../LessonAttendance/LessonAttendance';
+import { NotFound } from '../NotFound/NotFound';
+import { createBrowserHistory } from 'history';
+
+const history = createBrowserHistory();
+
+const pages = [
+  {
+    name: 'Главная',
+    icon: 'home',
+    path: '/'
+  },
+  {
+    name: 'Посещаемость',
+    path: '/lessons',
+    icon: 'today'
+  }
+];
+
+const ContentWrapper = styled.div`
+  display: flex;
+`;
+
+const PageWrapper = styled.div`
+  flex-grow: 1;
+  margin: 10px;
+`;
 
 class App extends React.Component {
   state = {
-    students: [],
-    isShowSetAbsentModal: false,
-    isLoading: true,
-    errorMessage: ''
+    isExpandedMenu: false
   };
 
-  async componentDidMount() {
-    try {
-      this.setState({ isLoading: true });
-      await this.syncStudents();
-    } catch (err) {
-      await this.setErrorMessage(err);
-    } finally {
-      this.setState({ isLoading: false });
-    }
-  }
-
-  syncStudents = async () => {
-    const students = await api.getStudents();
-
-    this.setState({
-      students
-    });
+  onMenuClick = () => {
+    this.setState((state) => ({
+      isExpandedMenu: !state.isExpandedMenu
+    }));
   };
 
-  updateStudent = (id, updater) => {
-    this.setState((state) => {
-      return {
-        students: _.map(state.students, (student) => {
-          if (student.id !== id) return student;
-
-          return {
-            ...student,
-            ...updater(student)
-          };
-        })
-      };
-    });
+  onNavigationItemClick = (path) => {
+    history.push(path);
   };
 
-  addScore = async (id, score) => {
-    try {
-      this.updateStudent(id, (student) => ({
-        score: student.score + score
-      }));
-
-      await api.addScore(id, score);
-    } catch (err) {
-      await this.setErrorMessage(err);
-    }
+  onLessonClick = (date) => {
+    history.push(`/lessons/attendance?date=${date}`);
   };
 
-  setAbsentStatus = async (id) => {
-    try {
-      this.updateStudent(id, () => ({ isPresent: false }));
-
-      await api.unsetPresentStatus(id);
-    } catch (err) {
-      await this.setErrorMessage(err);
-    }
-  };
-
-  setPresentStatus = async (id) => {
-    try {
-      this.updateStudent(id, () => ({ isPresent: true }));
-
-      await api.setPresentStatus(id);
-    } catch (err) {
-      await this.setErrorMessage(err);
-    }
-  };
-
-  resetAbsentStatus = async () => {
-    try {
-      const students = _.cloneDeep(this.state.students);
-
-      this.setState((state) => {
-        return {
-          students: _.map(state.students, (student) => {
-            return {
-              ...student,
-              isPresent: true
-            };
-          })
-        };
-      });
-
-      const promises = _.map(students, async ({ id, isPresent }) => {
-        if (!isPresent) {
-          await api.setPresentStatus(id);
-        }
-      });
-
-      await Promise.all(promises);
-    } catch (err) {
-      await this.setErrorMessage(err);
-    }
-  };
-
-  openSetAbsentModal = () => {
-    this.setState({
-      isShowSetAbsentModal: true
-    });
-  };
-
-  closeSetAbsentModal = () => {
-    this.setState({
-      isShowSetAbsentModal: false
-    });
-  };
-
-  setErrorMessage = async (err) => {
-    const isUnauthorized = _.get(err, 'response.status') === 401;
-
-    const errorMessage = isUnauthorized ? (
-      <UnauthorizedErrorMessage />
-    ) : (
-      _.get(err, 'response.data.message', err.message)
-    );
-
-    this.setState({
-      errorMessage
-    });
-
-    await this.syncStudents();
-  };
-
-  onErrorClose = () => {
-    this.setState({
-      errorMessage: ''
-    });
+  onBackClick = () => {
+    history.goBack();
   };
 
   render() {
-    const { students, isLoading, errorMessage } = this.state;
-    const presentStudents = _.filter(students, { isPresent: true });
-    const absentStudents = _.filter(students, { isPresent: false });
-
-    if (isLoading) {
-      return (
-        <div>
-          <Header />
-          <Spinner />
-        </div>
-      );
-    }
+    const { isExpandedMenu } = this.state;
 
     return (
-      <>
-        {this.state.isShowSetAbsentModal && (
-          <CardModal onClose={this.closeSetAbsentModal}>
-            <SetAbsentModalContent
-              students={students}
-              setAbsentStatus={this.setAbsentStatus}
-              setPresentStatus={this.setPresentStatus}
-            />
-          </CardModal>
-        )}
+      <Router history={history}>
+        <Header onMenuClick={this.onMenuClick} />
 
-        <ErrorMessage
-          isShow={!!errorMessage}
-          errorMessage={errorMessage}
-          onClose={this.onErrorClose}
+        <Persist
+          name="app"
+          data={{ isExpandedMenu }}
+          onMount={({ isExpandedMenu }) => {
+            this.setState({ isExpandedMenu });
+          }}
         />
 
-        <Header />
+        <ContentWrapper>
+          <Navigation
+            isExpanded={isExpandedMenu}
+            items={pages}
+            onClose={this.onMenuClick}
+            onItemClick={this.onNavigationItemClick}
+          />
 
-        <div className={styles.appContainer}>
-          <div className={styles.studentsListsContainer}>
-            <div className={styles.studentsListContainer}>
-              <StudentsList
-                title="Студенты"
-                students={presentStudents}
-                actions={[
-                  {
-                    icon: 'close',
-                    tooltip: 'Отсутствует',
-                    onClick: (event, rowData) => {
-                      this.setAbsentStatus(rowData.id);
-                    }
-                  },
-                  {
-                    icon: 'update',
-                    tooltip: 'Сбросить',
-                    isFreeAction: true,
-                    onClick: this.resetAbsentStatus
-                  },
-                  {
-                    icon: 'launch',
-                    tooltip: 'Отметить отсутствующих',
-                    isFreeAction: true,
-                    onClick: this.openSetAbsentModal
-                  }
-                ]}
-                onScoreUpdate={this.addScore}
+          <PageWrapper>
+            <Switch>
+              <Route path="/" exact component={Home} />
+              <Route
+                path="/lessons"
+                exact
+                render={(props) => <Lessons {...props} onClick={this.onLessonClick} />}
               />
-            </div>
-
-            <StudentsList
-              title="Отсутствующие"
-              students={absentStudents}
-              actions={[
-                {
-                  icon: 'add',
-                  tooltip: 'Добавить обратно',
-                  onClick: (event, rowData) => {
-                    this.setPresentStatus(rowData.id);
-                  }
-                }
-              ]}
-            />
-          </div>
-
-          <div className={styles.randomAnswererContainer}>
-            <CenterText>
-              <RandomAnswerer
-                answerers={presentStudents}
-                onAnswer={(id, score) => {
-                  this.addScore(id, score);
-                }}
-              />
-            </CenterText>
-          </div>
-        </div>
-      </>
+              <Route path="/lessons/attendance" exact component={LessonAttendance} />
+              <Route path="*" component={NotFound} />
+            </Switch>
+          </PageWrapper>
+        </ContentWrapper>
+      </Router>
     );
   }
 }

@@ -19,6 +19,12 @@ export const getStudents = async (date = new Date()) => {
   return data;
 };
 
+export const getLessons = async () => {
+  const { data } = await api.get('/lessons');
+
+  return data;
+};
+
 export const setPresentStatus = async (studentId, date = new Date()) => {
   await api.post('/present-students', {
     studentId,
