@@ -64,13 +64,7 @@ class App extends React.Component {
       <Router history={history}>
         <Header onMenuClick={this.onMenuClick} />
 
-        <Persist
-          name="app"
-          data={{ isExpandedMenu }}
-          onMount={({ isExpandedMenu }) => {
-            this.setState({ isExpandedMenu });
-          }}
-        />
+        <Persist name="app" data={{ isExpandedMenu }} onMount={(data) => this.setState(data)} />
 
         <ContentWrapper>
           <Navigation
