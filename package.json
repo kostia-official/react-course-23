@@ -23,7 +23,9 @@
     "lint-staged": "^10.0.8",
     "netlify": "^3.1.0",
     "node-sass": "^4.13.1",
-    "prettier": "^1.19.1"
+    "prettier": "^1.19.1",
+    "source-map-explorer": "^2.4.1",
+    "webpack-cli": "^3.3.11"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -32,7 +34,8 @@
     "eject": "react-scripts eject",
     "deploy": "npm run build && netlify deploy",
     "deploy:prod": "npm run build && netlify deploy --prod",
-    "prettier": "prettier --write 'src/**/*.{js,jsx,ts,tsx,json,css,scss,md}'"
+    "prettier": "prettier --write 'src/**/*.{js,jsx,ts,tsx,json,css,scss,md}'",
+    "analyze": "source-map-explorer 'build/static/js/*.js'"
   },
   "eslintConfig": {
     "extends": "react-app"

@@ -1,14 +1,15 @@
 import React from 'react';
-import Home from '../Home/Home';
 import { Header } from '../Header/Header';
 import { Navigation } from '../Navigation/Navigation';
 import styled from 'styled-components';
 import { Persist } from '../Persist/Persist';
-import { Lessons } from '../Lessons/Lessons';
 import { Router, Route, Switch } from 'react-router-dom';
-import { LessonAttendance } from '../LessonAttendance/LessonAttendance';
 import { NotFound } from '../NotFound/NotFound';
 import { createBrowserHistory } from 'history';
+
+const Home = React.lazy(() => import('../Home/Home'));
+const Lessons = React.lazy(() => import('../Lessons/Lessons'));
+const LessonAttendance = React.lazy(() => import('../LessonAttendance/LessonAttendance'));
 
 const history = createBrowserHistory();
 
@@ -81,16 +82,18 @@ class App extends React.Component {
           />
 
           <PageWrapper>
-            <Switch>
-              <Route path="/" exact component={Home} />
-              <Route
-                path="/lessons"
-                exact
-                render={(props) => <Lessons {...props} onClick={this.onLessonClick} />}
-              />
-              <Route path="/lessons/attendance" exact component={LessonAttendance} />
-              <Route path="*" component={NotFound} />
-            </Switch>
+            <React.Suspense fallback={<div />}>
+              <Switch>
+                <Route path="/" exact component={Home} />
+                <Route
+                  path="/lessons"
+                  exact
+                  render={(props) => <Lessons {...props} onClick={this.onLessonClick} />}
+                />
+                <Route path="/lessons/attendance" exact component={LessonAttendance} />
+                <Route path="*" component={NotFound} />
+              </Switch>
+            </React.Suspense>
           </PageWrapper>
         </ContentWrapper>
       </Router>

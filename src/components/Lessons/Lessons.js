@@ -1,6 +1,6 @@
 import React from 'react';
 import { getLessons } from '../../api';
-import _ from 'lodash';
+import _get from 'lodash/get';
 import { UnauthorizedErrorMessage } from '../UnauthorizedErrorMessage/UnauthorizedErrorMessage';
 import { Spinner } from '../Spinner/Spinner';
 import { ErrorMessage } from '../ErrorMessage/ErrorMessage';
@@ -20,7 +20,7 @@ const ButtonItem = styled(ButtonBase)`
   justify-content: start;
 `;
 
-export class Lessons extends React.Component {
+class Lessons extends React.Component {
   state = {
     lessons: [],
     isLoading: true,
@@ -41,12 +41,12 @@ export class Lessons extends React.Component {
   }
 
   setErrorMessage = async (err) => {
-    const isUnauthorized = _.get(err, 'response.status') === 401;
+    const isUnauthorized = _get(err, 'response.status') === 401;
 
     const errorMessage = isUnauthorized ? (
       <UnauthorizedErrorMessage />
     ) : (
-      _.get(err, 'response.data.message', err.message)
+      _get(err, 'response.data.message', err.message)
     );
 
     this.setState({
@@ -88,3 +88,5 @@ export class Lessons extends React.Component {
     );
   }
 }
+
+export default Lessons;
