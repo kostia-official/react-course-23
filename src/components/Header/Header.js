@@ -5,7 +5,6 @@ import { Menu, ChevronLeft } from '@material-ui/icons';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   menuButton: {
@@ -13,15 +12,8 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export const Header = ({ onMenuClick }) => {
+export const Header = ({ onMenuClick, onBackClick, isShowBack }) => {
   const classes = useStyles();
-  const history = useHistory();
-
-  const isShowBack = history.location.pathname !== '/';
-
-  const onBackClick = () => {
-    history.goBack();
-  };
 
   return (
     <AppBar position="static">

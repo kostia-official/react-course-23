@@ -1,9 +1,9 @@
 import React from 'react';
 import { getLessons } from '../../api';
 import _ from 'lodash';
-import { UnauthorizedErrorMessage } from '../UnauthorizedErrorMessage/UnauthorizedErrorMessage';
-import { Spinner } from '../Spinner/Spinner';
-import { ErrorMessage } from '../ErrorMessage/ErrorMessage';
+import { UnauthorizedErrorMessage } from '../../components/UnauthorizedErrorMessage/UnauthorizedErrorMessage';
+import { Spinner } from '../../components/Spinner/Spinner';
+import { ErrorMessage } from '../../components/ErrorMessage/ErrorMessage';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import Paper from '@material-ui/core/Paper';
@@ -20,7 +20,7 @@ const ButtonItem = styled(ButtonBase)`
   justify-content: start;
 `;
 
-export class Lessons extends React.Component {
+class Lessons extends React.Component {
   state = {
     lessons: [],
     isLoading: true,
@@ -88,3 +88,5 @@ export class Lessons extends React.Component {
     );
   }
 }
+
+export default Lessons;

@@ -1,13 +1,13 @@
 import React from 'react';
 import _ from 'lodash';
-import { UnauthorizedErrorMessage } from '../UnauthorizedErrorMessage/UnauthorizedErrorMessage';
-import { Spinner } from '../Spinner/Spinner';
-import { ErrorMessage } from '../ErrorMessage/ErrorMessage';
+import { UnauthorizedErrorMessage } from '../../components/UnauthorizedErrorMessage/UnauthorizedErrorMessage';
+import { Spinner } from '../../components/Spinner/Spinner';
+import { ErrorMessage } from '../../components/ErrorMessage/ErrorMessage';
 import { getStudents } from '../../api';
-import { StudentsList } from '../StudentsList/StudentsList';
+import { StudentsList } from '../../components/StudentsList/StudentsList';
 import qs from 'query-string';
 
-export class LessonAttendance extends React.Component {
+class LessonAttendance extends React.Component {
   state = {
     students: [],
     isLoading: true,
@@ -66,3 +66,5 @@ export class LessonAttendance extends React.Component {
     );
   }
 }
+
+export default LessonAttendance;

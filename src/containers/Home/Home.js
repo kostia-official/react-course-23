@@ -1,15 +1,15 @@
 import React from 'react';
 import _ from 'lodash';
 import * as api from '../../api';
-import { RandomAnswerer } from '../RandomAnswerer/RandomAnswerer';
-import { StudentsList } from '../StudentsList/StudentsList';
-import { CenterText } from '../CenterText/CenterText';
+import { RandomAnswerer } from '../../components/RandomAnswerer/RandomAnswerer';
+import { StudentsList } from '../../components/StudentsList/StudentsList';
+import { CenterText } from '../../components/CenterText/CenterText';
 import styles from './Home.module.scss';
-import { CardModal } from '../CardModal/CardModal';
-import { SetAbsentModalContent } from '../SetAbsentModalContent/SetAbsentModalContent';
-import { Spinner } from '../Spinner/Spinner';
-import { ErrorMessage } from '../ErrorMessage/ErrorMessage';
-import { UnauthorizedErrorMessage } from '../UnauthorizedErrorMessage/UnauthorizedErrorMessage';
+import { CardModal } from '../../components/CardModal/CardModal';
+import { SetAbsentModalContent } from '../../components/SetAbsentModalContent/SetAbsentModalContent';
+import { Spinner } from '../../components/Spinner/Spinner';
+import { ErrorMessage } from '../../components/ErrorMessage/ErrorMessage';
+import { UnauthorizedErrorMessage } from '../../components/UnauthorizedErrorMessage/UnauthorizedErrorMessage';
 
 class Home extends React.Component {
   state = {
