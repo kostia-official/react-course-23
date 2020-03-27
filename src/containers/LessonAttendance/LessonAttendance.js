@@ -42,8 +42,6 @@ class LessonAttendance extends React.Component {
     this.setState({
       errorMessage
     });
-
-    await this.syncStudents();
   };
 
   render() {

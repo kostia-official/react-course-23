@@ -52,8 +52,6 @@ class Lessons extends React.Component {
     this.setState({
       errorMessage
     });
-
-    await this.syncStudents();
   };
 
   render() {
