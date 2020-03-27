@@ -10,23 +10,24 @@ import { SetAbsentModalContent } from '../../components/SetAbsentModalContent/Se
 import { Spinner } from '../../components/Spinner/Spinner';
 import { ErrorMessage } from '../../components/ErrorMessage/ErrorMessage';
 import { UnauthorizedErrorMessage } from '../../components/UnauthorizedErrorMessage/UnauthorizedErrorMessage';
+import { withErrorMessage } from '../../HOCs/withErrorMessage';
+import { withLoader } from '../../HOCs/withLoader';
+import Typography from '@material-ui/core/Typography';
 
 class Home extends React.Component {
   state = {
     students: [],
-    isShowSetAbsentModal: false,
-    isLoading: true,
-    errorMessage: ''
+    isShowSetAbsentModal: false
   };
 
   async componentDidMount() {
     try {
-      this.setState({ isLoading: true });
+      this.props.setIsLoading(true);
       await this.syncStudents();
     } catch (err) {
-      await this.setErrorMessage(err);
+      await this.handleError(err);
     } finally {
-      this.setState({ isLoading: false });
+      this.props.setIsLoading(false);
     }
   }
 
@@ -61,7 +62,7 @@ class Home extends React.Component {
 
       await api.addScore(id, score);
     } catch (err) {
-      await this.setErrorMessage(err);
+      await this.handleError(err);
     }
   };
 
@@ -71,7 +72,7 @@ class Home extends React.Component {
 
       await api.unsetPresentStatus(id);
     } catch (err) {
-      await this.setErrorMessage(err);
+      await this.handleError(err);
     }
   };
 
@@ -81,7 +82,7 @@ class Home extends React.Component {
 
       await api.setPresentStatus(id);
     } catch (err) {
-      await this.setErrorMessage(err);
+      await this.handleError(err);
     }
   };
 
@@ -108,8 +109,13 @@ class Home extends React.Component {
 
       await Promise.all(promises);
     } catch (err) {
-      await this.setErrorMessage(err);
+      await this.handleError(err);
     }
+  };
+
+  handleError = async (err) => {
+    this.props.setErrorMessage(err);
+    await this.syncStudents();
   };
 
   openSetAbsentModal = () => {
@@ -124,36 +130,10 @@ class Home extends React.Component {
     });
   };
 
-  setErrorMessage = async (err) => {
-    const isUnauthorized = _.get(err, 'response.status') === 401;
-
-    const errorMessage = isUnauthorized ? (
-      <UnauthorizedErrorMessage />
-    ) : (
-      _.get(err, 'response.data.message', err.message)
-    );
-
-    this.setState({
-      errorMessage
-    });
-
-    await this.syncStudents();
-  };
-
-  onErrorClose = () => {
-    this.setState({
-      errorMessage: ''
-    });
-  };
-
   render() {
-    const { students, isLoading, errorMessage } = this.state;
+    const { students } = this.state;
     const presentStudents = _.filter(students, { isPresent: true });
     const absentStudents = _.filter(students, { isPresent: false });
-
-    if (isLoading) {
-      return <Spinner />;
-    }
 
     return (
       <>
@@ -166,12 +146,6 @@ class Home extends React.Component {
             />
           </CardModal>
         )}
-
-        <ErrorMessage
-          isShow={!!errorMessage}
-          errorMessage={errorMessage}
-          onClose={this.onErrorClose}
-        />
 
         <div className={styles.appContainer}>
           <div className={styles.studentsListsContainer}>
@@ -235,4 +209,4 @@ class Home extends React.Component {
   }
 }
 
-export default Home;
+export default withErrorMessage(withLoader(Home));

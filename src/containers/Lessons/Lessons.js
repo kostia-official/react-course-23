@@ -1,15 +1,12 @@
 import React from 'react';
 import { getLessons } from '../../api';
-import _ from 'lodash';
-import { UnauthorizedErrorMessage } from '../../components/UnauthorizedErrorMessage/UnauthorizedErrorMessage';
-import { Spinner } from '../../components/Spinner/Spinner';
-import { ErrorMessage } from '../../components/ErrorMessage/ErrorMessage';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { ButtonBase } from '@material-ui/core';
 import styled from 'styled-components';
+import { withRequest } from '../../HOCs/withRequest';
 
 const LessonWrapper = styled.div`
   padding: 10px;
@@ -22,53 +19,22 @@ const ButtonItem = styled(ButtonBase)`
 
 class Lessons extends React.Component {
   state = {
-    lessons: [],
-    isLoading: true,
-    errorMessage: ''
+    lessons: []
   };
 
-  async componentDidMount() {
-    try {
-      this.setState({ isLoading: true });
+  componentDidMount() {
+    this.props.handleRequest(async () => {
       const lessons = await getLessons();
 
       this.setState({ lessons });
-    } catch (err) {
-      this.setErrorMessage(err);
-    } finally {
-      this.setState({ isLoading: false });
-    }
+    });
   }
 
-  setErrorMessage = async (err) => {
-    const isUnauthorized = _.get(err, 'response.status') === 401;
-
-    const errorMessage = isUnauthorized ? (
-      <UnauthorizedErrorMessage />
-    ) : (
-      _.get(err, 'response.data.message', err.message)
-    );
-
-    this.setState({
-      errorMessage
-    });
-  };
-
   render() {
-    const { lessons, isLoading, errorMessage } = this.state;
-
-    if (isLoading) {
-      return <Spinner />;
-    }
+    const { lessons } = this.state;
 
     return (
       <div>
-        <ErrorMessage
-          isShow={!!errorMessage}
-          errorMessage={errorMessage}
-          onClose={this.onErrorClose}
-        />
-
         <GridList cols={3} spacing={10} cellHeight="auto">
           {lessons.map(({ date }) => (
             <GridListTile key={date}>
@@ -87,4 +53,4 @@ class Lessons extends React.Component {
   }
 }
 
-export default Lessons;
+export default withRequest(Lessons);

@@ -33,7 +33,7 @@ export class SetAbsentModalContent extends React.Component {
     const student = this.getCurrentStudent();
     if (!student) return;
 
-    this.props.setAbsentStatus(student.id);
+    if (student.isPresent) this.props.setAbsentStatus(student.id);
     this.nextStudent();
   };
 
@@ -41,7 +41,7 @@ export class SetAbsentModalContent extends React.Component {
     const student = this.getCurrentStudent();
     if (!student) return;
 
-    this.props.setPresentStatus(student.id);
+    if (!student.isPresent) this.props.setPresentStatus(student.id);
     this.nextStudent();
   };
 
