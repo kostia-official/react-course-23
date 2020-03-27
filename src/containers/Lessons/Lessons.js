@@ -71,7 +71,7 @@ class Lessons extends React.Component {
 
         <GridList cols={3} spacing={10} cellHeight="auto">
           {lessons.map(({ date }) => (
-            <GridListTile>
+            <GridListTile key={date}>
               <Paper>
                 <ButtonItem onClick={() => this.props.onClick(date)}>
                   <LessonWrapper>
