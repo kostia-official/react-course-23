@@ -3,6 +3,7 @@ import { createMuiTheme, ThemeProvider as MaterialThemeProvider } from '@materia
 import { teal } from '@material-ui/core/colors';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import React from 'react';
+import { ThemeProvider as StyledThemeProvider } from 'styled-components';
 
 export const ThemeProvider = (props) => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -17,8 +18,10 @@ export const ThemeProvider = (props) => {
 
   return (
     <MaterialThemeProvider theme={theme}>
-      <CssBaseline />
-      {props.children}
+      <StyledThemeProvider theme={theme}>
+        <CssBaseline />
+        {props.children}
+      </StyledThemeProvider>
     </MaterialThemeProvider>
   );
 };

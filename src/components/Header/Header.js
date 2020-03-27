@@ -7,28 +7,35 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
+  appBar: { zIndex: 1000 },
   menuButton: {
     marginRight: theme.spacing(2)
-  }
+  },
+  appBarBottomMargin: theme.mixins.toolbar // use the same height as Toolbar
 }));
 
 export const Header = ({ onMenuClick, onBackClick, isShowBack }) => {
   const classes = useStyles();
 
   return (
-    <AppBar position="static">
-      <Toolbar>
-        <IconButton
-          edge="start"
-          className={classes.menuButton}
-          color="inherit"
-          aria-label="menu"
-          onClick={isShowBack ? onBackClick : onMenuClick}
-        >
-          {isShowBack ? <ChevronLeft /> : <Menu />}
-        </IconButton>
-        <Typography variant="h6">Кто Хочет Ответить</Typography>
-      </Toolbar>
-    </AppBar>
+    <div>
+      <AppBar position="fixed" className={classes.appBar}>
+        <Toolbar>
+          <IconButton
+            edge="start"
+            className={classes.menuButton}
+            color="inherit"
+            aria-label="menu"
+            onClick={isShowBack ? onBackClick : onMenuClick}
+          >
+            {isShowBack ? <ChevronLeft /> : <Menu />}
+          </IconButton>
+          <Typography variant="h6">Кто Хочет Ответить</Typography>
+        </Toolbar>
+      </AppBar>
+
+      {/* Toolbar is fixed. Use empty div with Toolbar height to show content below it properly */}
+      <div className={classes.appBarBottomMargin} />
+    </div>
   );
 };
