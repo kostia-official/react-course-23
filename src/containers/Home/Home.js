@@ -7,12 +7,8 @@ import { CenterText } from '../../components/CenterText/CenterText';
 import styles from './Home.module.scss';
 import { CardModal } from '../../components/CardModal/CardModal';
 import { SetAbsentModalContent } from '../../components/SetAbsentModalContent/SetAbsentModalContent';
-import { Spinner } from '../../components/Spinner/Spinner';
-import { ErrorMessage } from '../../components/ErrorMessage/ErrorMessage';
-import { UnauthorizedErrorMessage } from '../../components/UnauthorizedErrorMessage/UnauthorizedErrorMessage';
 import { withErrorMessage } from '../../HOCs/withErrorMessage';
 import { withLoader } from '../../HOCs/withLoader';
-import Typography from '@material-ui/core/Typography';
 
 class Home extends React.Component {
   state = {
