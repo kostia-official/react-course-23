@@ -7,7 +7,7 @@ export class NotFound extends React.Component {
     return (
       <CenterText>
         <img src="https://media3.giphy.com/media/RHzqdZJztOu7S/source.gif" alt="Not found" />
-        <Typography>Страница не найдена</Typography>
+        <Typography>{this.props.errorMessage || 'Страница не найдена'}</Typography>
       </CenterText>
     );
   }

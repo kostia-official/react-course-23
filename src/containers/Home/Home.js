@@ -7,26 +7,23 @@ import { CenterText } from '../../components/CenterText/CenterText';
 import styles from './Home.module.scss';
 import { CardModal } from '../../components/CardModal/CardModal';
 import { SetAbsentModalContent } from '../../components/SetAbsentModalContent/SetAbsentModalContent';
-import { Spinner } from '../../components/Spinner/Spinner';
-import { ErrorMessage } from '../../components/ErrorMessage/ErrorMessage';
-import { UnauthorizedErrorMessage } from '../../components/UnauthorizedErrorMessage/UnauthorizedErrorMessage';
+import { withError } from '../../HOCs/withError';
+import { withLoader } from '../../HOCs/withLoader';
 
 class Home extends React.Component {
   state = {
     students: [],
-    isShowSetAbsentModal: false,
-    isLoading: true,
-    errorMessage: ''
+    isShowSetAbsentModal: false
   };
 
   async componentDidMount() {
     try {
-      this.setState({ isLoading: true });
+      this.props.setIsLoading(true);
       await this.syncStudents();
     } catch (err) {
       await this.setErrorMessage(err);
     } finally {
-      this.setState({ isLoading: false });
+      this.props.setIsLoading(false);
     }
   }
 
@@ -125,35 +122,14 @@ class Home extends React.Component {
   };
 
   setErrorMessage = async (err) => {
-    const isUnauthorized = _.get(err, 'response.status') === 401;
-
-    const errorMessage = isUnauthorized ? (
-      <UnauthorizedErrorMessage />
-    ) : (
-      _.get(err, 'response.data.message', err.message)
-    );
-
-    this.setState({
-      errorMessage
-    });
-
+    this.props.setErrorMessage(err);
     await this.syncStudents();
   };
 
-  onErrorClose = () => {
-    this.setState({
-      errorMessage: ''
-    });
-  };
-
   render() {
-    const { students, isLoading, errorMessage } = this.state;
+    const { students } = this.state;
     const presentStudents = _.filter(students, { isPresent: true });
     const absentStudents = _.filter(students, { isPresent: false });
-
-    if (isLoading) {
-      return <Spinner />;
-    }
 
     return (
       <>
@@ -166,12 +142,6 @@ class Home extends React.Component {
             />
           </CardModal>
         )}
-
-        <ErrorMessage
-          isShow={!!errorMessage}
-          errorMessage={errorMessage}
-          onClose={this.onErrorClose}
-        />
 
         <div className={styles.appContainer}>
           <div className={styles.studentsListsContainer}>
@@ -235,4 +205,4 @@ class Home extends React.Component {
   }
 }
 
-export default Home;
+export default withLoader(withError(Home));
