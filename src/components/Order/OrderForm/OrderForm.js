@@ -1,7 +1,6 @@
 import React from "react";
 import _ from "lodash";
-import * as PropTypes from "prop-types";
-import { OrderPreview } from "./OrderPreview/OrderPreview";
+import { Cart } from "./Cart/Cart";
 
 const UA_CODE = "+380";
 
@@ -145,11 +144,9 @@ export class OrderForm extends React.Component {
           </button>
         </fieldset>
 
-        <OrderPreview orderedProducts={this.state.orderedProducts} />
+        <Cart orderedProducts={this.state.orderedProducts} />
         <button>Заказать</button>
       </form>
     );
   }
 }
-
-OrderForm.propTypes = { products: PropTypes.any };
