@@ -1,8 +1,10 @@
 import React from "react";
 import { OrderForm } from "../OrderForm/OrderForm";
 import { v4 as uuid } from "uuid";
+import { withUser } from "../../HOCs/withUser";
+import _ from "lodash";
 
-export class App extends React.Component {
+class AppClass extends React.Component {
   state = {
     products: [
       {
@@ -24,15 +26,25 @@ export class App extends React.Component {
           { id: uuid(), name: "Сироп", price: 15 }
         ]
       },
-      { id: uuid(), name: "Кола", price: 10 }
+      { id: uuid(), name: "Кола", price: 10 },
+      { id: uuid(), name: "Пиво", price: 30, isForAdult: true }
     ]
   };
 
   render() {
+    const greeting = `${
+      this.props.isAdult() ? "Добро пожаловать" : "Йоу, привет"
+    }, ${this.props.user.name}!`;
+
+    const products = this.props.isAdult()
+      ? this.state.products
+      : _.filter(this.state.products, ({ isForAdult }) => !isForAdult);
+
     return (
       <div>
+        <p>{greeting}</p>
         <OrderForm
-          products={this.state.products}
+          products={products}
           onSubmit={order => {
             console.log(order);
           }}
@@ -41,3 +53,5 @@ export class App extends React.Component {
     );
   }
 }
+
+export const App = withUser(AppClass);
