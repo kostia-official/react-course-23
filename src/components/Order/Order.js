@@ -1,8 +1,10 @@
 import React from "react";
+import _ from "lodash";
 import { OrderForm } from "./OrderForm/OrderForm";
-import {v4 as uuid} from "uuid";
+import { v4 as uuid } from "uuid";
+import { withUser } from "../../contexts/UserContext";
 
-export class Order extends React.Component {
+class OrderComponent extends React.Component {
   state = {
     products: [
       {
@@ -24,15 +26,22 @@ export class Order extends React.Component {
           { id: uuid(), name: "Сироп", price: 15 }
         ]
       },
-      { id: uuid(), name: "Кола", price: 10 }
+      { id: uuid(), name: "Кола", price: 10 },
+      { id: uuid(), name: "Пиво", price: 30, isForAdult: true }
     ]
   };
 
   render() {
+    const { isAdult } = this.props;
+
+    const products = isAdult()
+      ? this.state.products
+      : _.filter(this.state.products, ({ isForAdult }) => !isForAdult);
+
     return (
       <div>
         <OrderForm
-          products={this.state.products}
+          products={products}
           onSubmit={order => {
             console.log(order);
           }}
@@ -41,3 +50,5 @@ export class Order extends React.Component {
     );
   }
 }
+
+export const Order = withUser(OrderComponent);

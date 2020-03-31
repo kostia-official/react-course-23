@@ -1,12 +1,13 @@
 import React from "react";
 import _ from "lodash";
 import { Cart } from "./Cart/Cart";
+import { withUser } from "../../../contexts/UserContext";
 
 const UA_CODE = "+380";
 
-export class OrderForm extends React.Component {
+class OrderFormComponent extends React.Component {
   state = {
-    phoneNumber: UA_CODE + "0931112233",
+    phoneNumber: UA_CODE + this.props.user.phoneNumber,
     selectedProductId: "",
     selectedAdditionsIds: [],
     orderedProducts: [],
@@ -150,3 +151,5 @@ export class OrderForm extends React.Component {
     );
   }
 }
+
+export const OrderForm = withUser(OrderFormComponent);

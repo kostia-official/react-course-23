@@ -4,10 +4,13 @@ import { App } from "./components/App/App";
 import { ThemeProvider } from "./ThemeProvider";
 
 import "./index.scss";
+import { UserProvider } from "./contexts/UserContext";
 
 ReactDOM.render(
-  <ThemeProvider>
-    <App />
-  </ThemeProvider>,
+  <UserProvider>
+    <ThemeProvider>
+      <App />
+    </ThemeProvider>
+  </UserProvider>,
   document.getElementById("root")
 );
