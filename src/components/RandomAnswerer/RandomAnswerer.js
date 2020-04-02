@@ -8,6 +8,8 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import CardActions from '@material-ui/core/CardActions';
 import { Countdown } from '../Countdown/Countdown';
+import { TransitionSwitch } from '../../transition/TransitionSwitch/TransitionSwitch';
+import FadeTransition from '../../styles/FadeTransition.module.scss';
 
 const SCORES = {
   answer: 10,
@@ -63,8 +65,13 @@ export class RandomAnswerer extends React.PureComponent {
   };
 
   render() {
-    const { isShowStudent, randomTitle, randomAnswerer } = this.state;
-    const isShowRevealButton = !this.state.isShowCountdown && !this.state.isShowStudent;
+    const { isShowStudent, randomTitle, randomAnswerer, isShowCountdown } = this.state;
+    const isShowRevealButton = !isShowCountdown && !isShowStudent;
+
+    const key =
+      (isShowRevealButton && 'reveal') ||
+      (isShowCountdown && 'countdown') ||
+      (isShowStudent && 'student');
 
     return (
       <Card>
@@ -74,27 +81,23 @@ export class RandomAnswerer extends React.PureComponent {
               {randomTitle}
             </Typography>
 
-            <div className={styles.answererContainer}>
-              {isShowStudent && (
-                <div id="random-answerer">
+            <TransitionSwitch transitionKey={key} styles={FadeTransition}>
+              <div className={styles.answererContainer}>
+                {isShowStudent && (
                   <Typography color="textSecondary">
                     {randomAnswerer ? randomAnswerer.name : 'Нужно отметить присутствующих'}
                   </Typography>
-                </div>
-              )}
+                )}
 
-              {this.state.isShowCountdown && (
-                <Countdown seconds={3} onFinish={this.onCountdownFinish} />
-              )}
+                {isShowCountdown && <Countdown seconds={3} onFinish={this.onCountdownFinish} />}
 
-              {isShowRevealButton && (
-                <div id="show-button">
+                {isShowRevealButton && (
                   <Button size="small" onClick={this.showCountdown}>
                     Показать
                   </Button>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            </TransitionSwitch>
           </CardContent>
         </div>
         <CardActions className={styles.actionsContainer}>

@@ -5,10 +5,11 @@ import CardActions from '@material-ui/core/CardActions';
 import Button from '@material-ui/core/Button';
 import styles from './SetAbsentModalContent.module.scss';
 import { VoiceControl } from '../../helpers/voice-control';
+import { StyledSlideTransitionSwitch } from '../../transition/StyledSlideTransitionSwitch/StyledSlideTransitionSwitch';
 
 export class SetAbsentModalContent extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
 
     this.state = {
       studentIndex: 0,
@@ -50,7 +51,8 @@ export class SetAbsentModalContent extends React.Component {
     if (!student) return;
 
     this.voiceControl.speak({
-      text: student.name
+      text: student.name,
+      delay: 200
     });
 
     this.voiceControl.listen({
@@ -58,31 +60,32 @@ export class SetAbsentModalContent extends React.Component {
       onRecognize: () => this.setState({ status: 'present' }),
       onTimeout: () => this.setState({ status: 'absent' })
     });
-
-    // this.voiceControl.clearListeners();
   };
 
   componentDidMount() {
-    this.runVoiceControl();
+    // this.runVoiceControl();
   }
 
   componentWillUnmount() {
-    this.voiceControl.clearListeners();
+    // this.voiceControl.clearListeners();
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    if (prevState.studentIndex !== this.state.studentIndex) {
-      this.runVoiceControl();
-    }
+    // if (prevState.studentIndex !== this.state.studentIndex) {
+    //   this.runVoiceControl();
+    // }
   }
 
   render() {
     const student = this.getCurrentStudent();
+    const studentName = student ? String(student.name) : 'Готово';
 
     return (
       <div>
         <CardContent className={styles.container}>
-          <Typography variant="h5">{student ? student.name : 'Готово'}</Typography>
+          <StyledSlideTransitionSwitch transitionKey={studentName}>
+            <Typography variant="h5">{studentName}</Typography>
+          </StyledSlideTransitionSwitch>
         </CardContent>
         {student && (
           <CardActions className={styles.buttonsWrapper}>

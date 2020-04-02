@@ -25,12 +25,14 @@ export class VoiceControl {
     };
   };
 
-  speak = ({ text, onEnd }) => {
+  speak = ({ text, delay = 0, onEnd }) => {
     const { speechSynthesis } = window;
     this.speechSynthesisUtterance = new SpeechSynthesisUtterance(text);
     this.speechSynthesisUtterance.lang = this.lang;
 
-    speechSynthesis.speak(this.speechSynthesisUtterance);
+    this.timeoutForSpeak = setTimeout(() => {
+      speechSynthesis.speak(this.speechSynthesisUtterance);
+    }, delay);
 
     this.onEndListener = () => {
       onEnd && onEnd();
@@ -41,6 +43,7 @@ export class VoiceControl {
 
   clearListeners() {
     if (this.timeoutListener) clearTimeout(this.timeoutListener);
+    if (this.timeoutForSpeak) clearTimeout(this.timeoutForSpeak);
     if (this.recognition) this.recognition.stop();
     if (this.onEndListener)
       this.speechSynthesisUtterance.removeEventListener('end', this.onEndListener);

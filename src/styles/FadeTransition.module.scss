@@ -1,0 +1,19 @@
+@value delay: 400ms;
+
+.enter {
+  opacity: 0;
+}
+
+.enterActive {
+  opacity: 1;
+  transition: opacity delay ease-in-out;
+}
+
+.exit {
+  opacity: 1;
+}
+
+.exitActive {
+  opacity: 0;
+  transition: opacity delay ease-in-out;
+}

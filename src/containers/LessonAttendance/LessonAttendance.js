@@ -1,6 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
-import { StudentsList } from '../../components/StudentsList/StudentsList';
+import { StudentsTable } from '../../components/StudentsTable/StudentsTable';
 import qs from 'query-string';
 import { GetStudents } from '../../components/GetStudents/GetStudents';
 
@@ -12,7 +12,7 @@ function LessonAttendance({ location }) {
       {(students) => {
         const presentStudents = _.filter(students, 'isPresent');
 
-        return <StudentsList students={presentStudents} />;
+        return <StudentsTable students={presentStudents} />;
       }}
     </GetStudents>
   );
