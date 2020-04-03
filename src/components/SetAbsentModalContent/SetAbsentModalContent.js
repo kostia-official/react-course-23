@@ -5,6 +5,7 @@ import CardActions from '@material-ui/core/CardActions';
 import Button from '@material-ui/core/Button';
 import styles from './SetAbsentModalContent.module.scss';
 import { VoiceControl } from '../../helpers/voice-control';
+import { SlideTransitionSwitch } from '../../transitions/SlideTransitionSwitch/SlideTransitionSwitch';
 
 export class SetAbsentModalContent extends React.Component {
   constructor() {
@@ -63,26 +64,29 @@ export class SetAbsentModalContent extends React.Component {
   };
 
   componentDidMount() {
-    this.runVoiceControl();
+    // this.runVoiceControl();
   }
 
   componentWillUnmount() {
-    this.voiceControl.clearListeners();
+    // this.voiceControl.clearListeners();
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    if (prevState.studentIndex !== this.state.studentIndex) {
-      this.runVoiceControl();
-    }
+    // if (prevState.studentIndex !== this.state.studentIndex) {
+    //   this.runVoiceControl();
+    // }
   }
 
   render() {
     const student = this.getCurrentStudent();
+    const studentName = student ? student.name : 'Готово';
 
     return (
       <div>
         <CardContent className={styles.container}>
-          <Typography variant="h5">{student ? student.name : 'Готово'}</Typography>
+          <SlideTransitionSwitch transitionKey={studentName}>
+            <Typography variant="h5">{studentName}</Typography>
+          </SlideTransitionSwitch>
         </CardContent>
         {student && (
           <CardActions className={styles.buttonsWrapper}>

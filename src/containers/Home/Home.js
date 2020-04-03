@@ -2,7 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import * as api from '../../api';
 import { RandomAnswerer } from '../../components/RandomAnswerer/RandomAnswerer';
-import { StudentsList } from '../../components/StudentsList/StudentsList';
+import { StudentsTable } from '../../components/StudentsTable/StudentsTable';
 import { CenterText } from '../../components/CenterText/CenterText';
 import styles from './Home.module.scss';
 import { CardModal } from '../../components/CardModal/CardModal';
@@ -133,20 +133,18 @@ class Home extends React.Component {
 
     return (
       <>
-        {this.state.isShowSetAbsentModal && (
-          <CardModal onClose={this.closeSetAbsentModal}>
-            <SetAbsentModalContent
-              students={students}
-              setAbsentStatus={this.setAbsentStatus}
-              setPresentStatus={this.setPresentStatus}
-            />
-          </CardModal>
-        )}
+        <CardModal isShow={this.state.isShowSetAbsentModal} onClose={this.closeSetAbsentModal}>
+          <SetAbsentModalContent
+            students={students}
+            setAbsentStatus={this.setAbsentStatus}
+            setPresentStatus={this.setPresentStatus}
+          />
+        </CardModal>
 
         <div className={styles.appContainer}>
           <div className={styles.studentsListsContainer}>
             <div className={styles.studentsListContainer}>
-              <StudentsList
+              <StudentsTable
                 title="Студенты"
                 students={presentStudents}
                 actions={[
@@ -174,7 +172,7 @@ class Home extends React.Component {
               />
             </div>
 
-            <StudentsList
+            <StudentsTable
               title="Отсутствующие"
               students={absentStudents}
               actions={[

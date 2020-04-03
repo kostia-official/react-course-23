@@ -1,0 +1,19 @@
+@value delay: 400ms;
+
+.enter {
+  transform: scale(0);
+}
+
+.enterActive {
+  transform: scale(1);
+  transition: transform delay ease-in-out;
+}
+
+.exit {
+  transform: scale(1);
+}
+
+.exitActive {
+  transform: scale(0);
+  transition: transform delay ease-in-out;
+}
