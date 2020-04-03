@@ -1,47 +1,41 @@
 import React from 'react';
-import MaterialTable from 'material-table';
-import { ControlledInput } from '../ControlledInput/ControlledInput';
+import _ from 'lodash';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import IconButton from '@material-ui/core/IconButton';
+import Icon from '@material-ui/core/Icon';
+import Paper from '@material-ui/core/Paper';
+import TransitionGroup from 'react-transition-group/TransitionGroup';
+import CSSTransition from 'react-transition-group/CSSTransition';
+import popTransition from '../../styles/PopTransition.module.scss';
 
-export const StudentsList = ({ students, title = 'Список студентов', actions, onScoreUpdate }) => {
+export function StudentsList({ students, actionIcon, onActionClick }) {
+  const sortedStudents = _.orderBy(students, ['score'], ['desc']);
+
   return (
-    <MaterialTable
-      title={title}
-      columns={[
-        { title: 'Имя', field: 'name', width: 180 },
-        {
-          title: 'Очки',
-          field: 'score',
-          type: 'numeric',
-          defaultSort: 'desc',
-          render: ({ id, score }) => {
-            return (
-              <ControlledInput
-                key={id}
-                type="number"
-                value={score}
-                onValueUpdate={(value) => {
-                  onScoreUpdate(id, Number(value) - score);
-                }}
-              />
-            );
-          }
-        }
-      ]}
-      data={students}
-      options={{
-        paging: false,
-        search: false,
-        actionsColumnIndex: -1
-      }}
-      localization={{
-        header: {
-          actions: ''
-        },
-        body: {
-          emptyDataSourceMessage: 'Пусто'
-        }
-      }}
-      actions={actions}
-    />
+    <Paper>
+      <List>
+        <TransitionGroup exit={false}>
+          {_.map(sortedStudents, (student) => (
+            <CSSTransition key={student.id} timeout={500} classNames={popTransition}>
+              <ListItem key={student.id}>
+                <ListItemText primary={student.name} secondary={`Очки: ${student.score}`} />
+                <ListItemSecondaryAction>
+                  <IconButton
+                    edge="end"
+                    aria-label="delete"
+                    onClick={() => onActionClick(student.id)}
+                  >
+                    <Icon>{actionIcon}</Icon>
+                  </IconButton>
+                </ListItemSecondaryAction>
+              </ListItem>
+            </CSSTransition>
+          ))}
+        </TransitionGroup>
+      </List>
+    </Paper>
   );
-};
+}

@@ -2,7 +2,7 @@ import React from 'react';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import styles from './Countdown.module.scss';
 
-const ANIMATION_DELAY = 200;
+const ANIMATION_DELAY = 100;
 
 export class Countdown extends React.Component {
   state = {
