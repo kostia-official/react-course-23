@@ -8,7 +8,7 @@ import { FadeTransition } from '../../transitions/FadeTransition/FadeTransition'
 export class CardModal extends React.Component {
   render() {
     return (
-      <FadeTransition isShow={this.props.isShow} delay={300}>
+      <FadeTransition isShow={this.props.isShow}>
         <div className={styles.cardModalContainer}>
           <div className={styles.overlay} onClick={this.props.onClose} />
           <Card className={styles.modal}>

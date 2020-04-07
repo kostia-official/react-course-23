@@ -7,7 +7,7 @@ const ToHide = styled.div`
   display: ${({ isShow }) => (isShow ? 'block' : 'none')};
 `;
 
-export const withLoader = (WrappedComponent) => {
+export const withLoader = (WrappedComponent, { LoaderContainer = React.Fragment } = {}) => {
   return class extends React.Component {
     state = {
       isLoading: true
@@ -21,7 +21,9 @@ export const withLoader = (WrappedComponent) => {
       return (
         <div>
           <ToHide isShow={this.state.isLoading}>
-            <Spinner />
+            <LoaderContainer>
+              <Spinner />
+            </LoaderContainer>
           </ToHide>
 
           <ToHide isShow={!this.state.isLoading}>

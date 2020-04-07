@@ -6,9 +6,9 @@ import { StudentsTable } from '../../components/StudentsTable/StudentsTable';
 import { CenterText } from '../../components/CenterText/CenterText';
 import styles from './Home.module.scss';
 import { CardModal } from '../../components/CardModal/CardModal';
-import { SetAbsentModalContent } from '../../components/SetAbsentModalContent/SetAbsentModalContent';
 import { withError } from '../../HOCs/withError';
 import { withLoader } from '../../HOCs/withLoader';
+import { AttendanceFromZoom } from '../AttendanceFromZoom/AttendanceFromZoom';
 
 class Home extends React.Component {
   state = {
@@ -64,6 +64,9 @@ class Home extends React.Component {
 
   setAbsentStatus = async (id) => {
     try {
+      const student = _.find(this.state.students, { id });
+      if (!student.isPresent) return;
+
       this.updateStudent(id, () => ({ isPresent: false }));
 
       await api.unsetPresentStatus(id);
@@ -74,6 +77,9 @@ class Home extends React.Component {
 
   setPresentStatus = async (id) => {
     try {
+      const student = _.find(this.state.students, { id });
+      if (student.isPresent) return;
+
       this.updateStudent(id, () => ({ isPresent: true }));
 
       await api.setPresentStatus(id);
@@ -134,7 +140,7 @@ class Home extends React.Component {
     return (
       <>
         <CardModal isShow={this.state.isShowSetAbsentModal} onClose={this.closeSetAbsentModal}>
-          <SetAbsentModalContent
+          <AttendanceFromZoom
             students={students}
             setAbsentStatus={this.setAbsentStatus}
             setPresentStatus={this.setPresentStatus}

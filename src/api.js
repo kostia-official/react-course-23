@@ -25,10 +25,22 @@ export const getLessons = async () => {
   return data;
 };
 
+export const getWebinarJoins = async (joinDate = new Date()) => {
+  const { data } = await api.get('/webinar/joins', { params: { joinDate } });
+
+  return data;
+};
+
 export const setPresentStatus = async (studentId, date = new Date()) => {
   await api.post('/present-students', {
     studentId,
     date
+  });
+};
+
+export const setStudentIdForParticipant = async (participantId, studentId) => {
+  await api.patch(`/webinar/participants/${participantId}`, {
+    studentId
   });
 };
 
