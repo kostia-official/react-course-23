@@ -12,6 +12,8 @@ export const withError = (WrappedComponent) => {
     };
 
     setErrorMessage = (err) => {
+      console.error(err);
+
       const status = _.get(err, 'response.status');
       const isUnauthorized = status === 401;
       const isNotFound = status === 404;
