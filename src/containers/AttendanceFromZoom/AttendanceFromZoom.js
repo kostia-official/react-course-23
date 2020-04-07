@@ -82,7 +82,6 @@ const AttendanceFromZoomComponent = ({
 
   useEffect(() => {
     (async () => {
-      console.log('useEffect');
       try {
         const joins = await api.getWebinarJoins();
 
