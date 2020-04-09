@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, Fragment } from 'react';
 import styled from 'styled-components';
 import _ from 'lodash';
+import stringSimilarity from 'string-similarity';
 import Typography from '@material-ui/core/Typography';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
@@ -22,6 +23,10 @@ const Container = styled.div`
 const CardContentContainer = styled.div`
   display: flex;
   align-items: center;
+  justify-content: center;
+`;
+
+const CardActionsStyled = styled(CardActions)`
   justify-content: center;
 `;
 
@@ -50,8 +55,8 @@ const AttendanceFromZoomComponent = ({
   );
 
   const setStudentIdForJoin = (participantId, studentId) =>
-    setWebinarJoins(
-      _.map(webinarJoins, (join) => {
+    setWebinarJoins((prevWebinarJoins) =>
+      _.map(prevWebinarJoins, (join) => {
         if (join.participantId === participantId) {
           return { ...join, studentId };
         }
@@ -60,16 +65,20 @@ const AttendanceFromZoomComponent = ({
       })
     );
 
-  const getNotMatchedStudents = useCallback(
-    () =>
-      _.filter(students, (student) => {
-        const knownParticipant = _.find(webinarJoins, { studentId: student.id });
-        return !knownParticipant;
-      }),
-    [webinarJoins, students]
-  );
+  const getNotMatchedStudents = useCallback(() => {
+    const notMatchedStudents = _.filter(students, (student) => {
+      const knownParticipant = _.find(webinarJoins, { studentId: student.id });
+      return !knownParticipant;
+    });
 
-  const nextJoin = () => setJoinIndex(joinIndex + 1);
+    return _.sortBy(notMatchedStudents, (student) => {
+      const participantName = webinarJoins[joinIndex]?.participantName || '';
+      const similarity = stringSimilarity.compareTwoStrings(participantName, student.name);
+      return -similarity;
+    });
+  }, [webinarJoins, joinIndex, students]);
+
+  const nextJoin = () => setJoinIndex((prevJoinIndex) => prevJoinIndex + 1);
 
   const matchStudentAndParticipant = async (studentId, participantId) => {
     setPresentStatus(studentId);
@@ -112,7 +121,7 @@ const AttendanceFromZoomComponent = ({
           </CardContent>
         </CardContentContainer>
 
-        <CardActions>
+        <CardActionsStyled>
           <TransitionGroupStyled>
             {webinarJoin &&
               _.map(studentsOptions, (student) => (
@@ -128,8 +137,16 @@ const AttendanceFromZoomComponent = ({
                   </Button>
                 </CSSTransition>
               ))}
+            {/*TODO: Move button with transition to the separate component*/}
+            {webinarJoin && (
+              <CSSTransition key="skip" timeout={400} classNames={fadeTransition}>
+                <Button size="small" onClick={() => nextJoin()}>
+                  Пропустить
+                </Button>
+              </CSSTransition>
+            )}
           </TransitionGroupStyled>
-        </CardActions>
+        </CardActionsStyled>
       </Fragment>
     </Container>
   );
