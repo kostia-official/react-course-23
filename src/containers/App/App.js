@@ -7,7 +7,7 @@ import { Route, Switch, withRouter } from 'react-router-dom';
 import { NotFound } from '../../components/NotFound/NotFound';
 
 const Home = React.lazy(() => import('../Home/Home'));
-const Lessons = React.lazy(() => import('../Lessons/Lessons'));
+const Lessons = React.lazy(() => import('../Lessons/LessonsHooks'));
 const LessonAttendance = React.lazy(() => import('../LessonAttendance/LessonAttendance'));
 
 const pages = [

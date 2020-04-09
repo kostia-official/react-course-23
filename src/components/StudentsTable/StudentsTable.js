@@ -1,6 +1,6 @@
 import React from 'react';
 import MaterialTable from 'material-table';
-import { ControlledInput } from '../ControlledInput/ControlledInput';
+import { ControlledInput } from '../ControlledInput/ControlledInputHooks';
 
 export const StudentsTable = ({ students, title = 'Список студентов', actions, onScoreUpdate }) => {
   return (
