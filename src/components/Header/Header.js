@@ -7,15 +7,20 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
-  appBar: { zIndex: 1000 },
+  appBar: { zIndex: 1000, display: 'flex' },
   menuButton: {
     marginRight: theme.spacing(2)
   },
-  appBarBottomMargin: theme.mixins.toolbar // use the same height as Toolbar
+  appBarBottomMargin: theme.mixins.toolbar, // use the same height as Toolbar
+  title: {
+    flexGrow: 1
+  }
 }));
 
-export const Header = ({ onMenuClick, onBackClick, isShowBack }) => {
+export const Header = ({ onMenuClick, onBackClick, title, isShowBack, rightContent }) => {
   const classes = useStyles();
+
+  console.log('render header');
 
   return (
     <div>
@@ -30,7 +35,10 @@ export const Header = ({ onMenuClick, onBackClick, isShowBack }) => {
           >
             {isShowBack ? <ChevronLeft /> : <Menu />}
           </IconButton>
-          <Typography variant="h6">Кто Хочет Ответить</Typography>
+          <Typography variant="h6" className={classes.title}>
+            {title}
+          </Typography>
+          {rightContent}
         </Toolbar>
       </AppBar>
 

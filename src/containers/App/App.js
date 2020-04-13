@@ -2,24 +2,18 @@ import React, { Suspense } from 'react';
 import { Header } from '../../components/Header/Header';
 import { Navigation } from '../../components/Navigation/Navigation';
 import styled from 'styled-components';
-import { Persist } from '../../components/Persist/Persist';
 import { Route, Switch, withRouter } from 'react-router-dom';
-import { NotFound } from '../../components/NotFound/NotFound';
+import { connect } from 'react-redux';
+import Typography from '@material-ui/core/Typography';
+import _ from 'lodash';
 
-const Home = React.lazy(() => import('../Home/Home'));
-const Lessons = React.lazy(() => import('../Lessons/Lessons'));
-const LessonAttendance = React.lazy(() => import('../LessonAttendance/LessonAttendance'));
+const Posts = React.lazy(() => import('../Posts/Posts'));
 
 const pages = [
   {
     name: 'Главная',
     icon: 'home',
     path: '/'
-  },
-  {
-    name: 'Посещаемость',
-    path: '/lessons',
-    icon: 'today'
   }
 ];
 
@@ -57,6 +51,7 @@ class App extends React.Component {
 
   render() {
     const { isExpandedMenu } = this.state;
+    const { userLikesCount, userPostsCount } = this.props;
     const isShowBack = this.props.history.location.pathname !== '/';
 
     return (
@@ -65,9 +60,13 @@ class App extends React.Component {
           onMenuClick={this.onMenuClick}
           onBackClick={this.onBackClick}
           isShowBack={isShowBack}
+          title="Posts"
+          rightContent={
+            <Typography variant="h6">
+              Likes: {userLikesCount} Posts: {userPostsCount}
+            </Typography>
+          }
         />
-
-        <Persist name="app" data={{ isExpandedMenu }} onMount={(data) => this.setState(data)} />
 
         <ContentWrapper>
           <Navigation
@@ -80,14 +79,7 @@ class App extends React.Component {
           <PageWrapper>
             <Suspense fallback={<div />}>
               <Switch>
-                <Route path="/" exact component={Home} />
-                <Route
-                  path="/lessons"
-                  exact
-                  render={(props) => <Lessons {...props} onClick={this.onLessonClick} />}
-                />
-                <Route path="/lessons/attendance" exact component={LessonAttendance} />
-                <Route path="*" component={NotFound} />
+                <Route path="/" exact component={Posts} />
               </Switch>
             </Suspense>
           </PageWrapper>
@@ -97,4 +89,25 @@ class App extends React.Component {
   }
 }
 
-export default withRouter(App);
+const mapStateToProps = (state) => ({
+  userLikesCount: _.reduce(
+    state.posts,
+    (count, post) => {
+      if (post.isLiked) return count + 1;
+
+      return count;
+    },
+    0
+  ),
+  userPostsCount: _.reduce(
+    state.posts,
+    (count, post) => {
+      if (post.userId === state.user.id) return count + 1;
+
+      return count;
+    },
+    0
+  )
+});
+
+export default connect(mapStateToProps)(withRouter(App));
