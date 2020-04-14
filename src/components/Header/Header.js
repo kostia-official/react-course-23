@@ -11,10 +11,13 @@ const useStyles = makeStyles((theme) => ({
   menuButton: {
     marginRight: theme.spacing(2)
   },
+  title: {
+    flexGrow: 1
+  },
   appBarBottomMargin: theme.mixins.toolbar // use the same height as Toolbar
 }));
 
-export const Header = ({ onMenuClick, onBackClick, isShowBack }) => {
+export const Header = ({ onMenuClick, onBackClick, isShowBack, title, rightContent }) => {
   const classes = useStyles();
 
   return (
@@ -30,7 +33,10 @@ export const Header = ({ onMenuClick, onBackClick, isShowBack }) => {
           >
             {isShowBack ? <ChevronLeft /> : <Menu />}
           </IconButton>
-          <Typography variant="h6">Кто Хочет Ответить</Typography>
+          <Typography variant="h6" className={classes.title}>
+            {title}
+          </Typography>
+          <Typography variant="h6">{rightContent}</Typography>
         </Toolbar>
       </AppBar>
 
