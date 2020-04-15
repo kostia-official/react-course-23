@@ -1,36 +1,29 @@
-import React, { useState, useEffect, useCallback, Fragment } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import _ from 'lodash';
 import stringSimilarity from 'string-similarity';
 import Typography from '@material-ui/core/Typography';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
-import Button from '@material-ui/core/Button';
 import * as api from '../../api';
 import { withError } from '../../HOCs/withError';
 import { FadeTransitionSwitch } from '../../transitions/FadeTransitionSwitch/FadeTransitionSwitch';
 import { CenterText } from '../../components/CenterText/CenterText';
 import { withLoader } from '../../HOCs/withLoader';
-import TransitionGroup from 'react-transition-group/TransitionGroup';
-import fadeTransition from '../../styles/FadeTransition.module.scss';
-import CSSTransition from 'react-transition-group/CSSTransition';
+import Button from '@material-ui/core/Button';
 
 const Container = styled.div`
   width: 300px;
   min-height: 130px;
 `;
 
-const CardContentContainer = styled.div`
+const CardContentStyled = styled(CardContent)`
   display: flex;
   align-items: center;
   justify-content: center;
 `;
 
 const CardActionsStyled = styled(CardActions)`
-  justify-content: center;
-`;
-
-const TransitionGroupStyled = styled(TransitionGroup)`
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -54,28 +47,38 @@ const AttendanceFromZoomComponent = ({
     [setPresentStatus]
   );
 
-  const setStudentIdForJoin = (participantId, studentId) =>
-    setWebinarJoins((prevWebinarJoins) =>
-      _.map(prevWebinarJoins, (join) => {
-        if (join.participantId === participantId) {
-          return { ...join, studentId };
-        }
+  const setStudentIdForJoin = useCallback(
+    (participantId, studentId) =>
+      setWebinarJoins((prevWebinarJoins) =>
+        _.map(prevWebinarJoins, (join) => {
+          if (join.participantId === participantId) {
+            return { ...join, studentId };
+          }
 
-        return join;
-      })
-    );
+          return join;
+        })
+      ),
+    [setWebinarJoins]
+  );
 
   const getNotMatchedStudents = useCallback(() => {
-    const notMatchedStudents = _.filter(students, (student) => {
-      const knownParticipant = _.find(webinarJoins, { studentId: student.id });
-      return !knownParticipant;
+    const studentsWithParticipantId = _.map(students, (student) => {
+      const participantId = _.find(webinarJoins, { studentId: student.id });
+
+      return { ...student, participantId };
     });
 
-    return _.sortBy(notMatchedStudents, (student) => {
-      const participantName = webinarJoins[joinIndex]?.participantName || '';
-      const similarity = stringSimilarity.compareTwoStrings(participantName, student.name);
-      return -similarity;
-    });
+    return _.orderBy(
+      studentsWithParticipantId,
+      [
+        'participantId',
+        (student) => {
+          const participantName = webinarJoins[joinIndex]?.participantName || '';
+          return stringSimilarity.compareTwoStrings(participantName, student.name);
+        }
+      ],
+      ['desc', 'desc']
+    );
   }, [webinarJoins, joinIndex, students]);
 
   const nextJoin = () => setJoinIndex((prevJoinIndex) => prevJoinIndex + 1);
@@ -83,10 +86,11 @@ const AttendanceFromZoomComponent = ({
   const matchStudentAndParticipant = async (studentId, participantId) => {
     setPresentStatus(studentId);
 
-    setStudentIdForJoin(participantId, studentId);
     await api.setStudentIdForParticipant(participantId, studentId);
 
     nextJoin();
+
+    setStudentIdForJoin(participantId, studentId);
   };
 
   useEffect(() => {
@@ -109,46 +113,33 @@ const AttendanceFromZoomComponent = ({
   const studentsOptions = getNotMatchedStudents();
 
   return (
-    <Container>
-      <Fragment>
-        <CardContentContainer>
-          <CardContent>
-            <FadeTransitionSwitch transitionKey={joinIndex}>
-              <CenterText>
-                <Typography variant="h5">{label}</Typography>
-              </CenterText>
-            </FadeTransitionSwitch>
-          </CardContent>
-        </CardContentContainer>
+    <FadeTransitionSwitch transitionKey={joinIndex}>
+      <Container>
+        <CardContentStyled>
+          <CenterText>
+            <Typography variant="h5">{label}</Typography>
+          </CenterText>
+        </CardContentStyled>
 
-        <CardActionsStyled>
-          <TransitionGroupStyled>
-            {webinarJoin &&
-              _.map(studentsOptions, (student) => (
-                <CSSTransition key={student.id} timeout={400} classNames={fadeTransition}>
-                  <Button
-                    key={student.id}
-                    size="small"
-                    onClick={() =>
-                      matchStudentAndParticipant(student.id, webinarJoin.participantId)
-                    }
-                  >
-                    {student.name}
-                  </Button>
-                </CSSTransition>
-              ))}
-            {/*TODO: Move button with transition to the separate component*/}
-            {webinarJoin && (
-              <CSSTransition key="skip" timeout={400} classNames={fadeTransition}>
-                <Button size="small" onClick={() => nextJoin()}>
-                  Пропустить
-                </Button>
-              </CSSTransition>
-            )}
-          </TransitionGroupStyled>
-        </CardActionsStyled>
-      </Fragment>
-    </Container>
+        {webinarJoin && (
+          <CardActionsStyled>
+            {_.map(studentsOptions, (student) => (
+              <Button
+                key={student.id}
+                size="small"
+                style={student.participantId && { color: 'grey' }}
+                onClick={() => matchStudentAndParticipant(student.id, webinarJoin.participantId)}
+              >
+                {student.name}
+              </Button>
+            ))}
+            <Button size="small" onClick={() => nextJoin()}>
+              Пропустить
+            </Button>
+          </CardActionsStyled>
+        )}
+      </Container>
+    </FadeTransitionSwitch>
   );
 };
 
