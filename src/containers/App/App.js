@@ -84,9 +84,9 @@ class App extends React.Component {
 
 const mapStateToProps = (state) => ({
   postsCount: _.reduce(
-    state.posts,
+    state.posts.data,
     (count, post) => {
-      const ownUserId = state.user.id;
+      const ownUserId = state.user.data?.id;
 
       if (post.userId !== ownUserId) return count;
 
@@ -95,7 +95,7 @@ const mapStateToProps = (state) => ({
     0
   ),
   likesCount: _.reduce(
-    state.posts,
+    state.posts.data,
     (count, post) => {
       if (post.isLiked) return count + 1;
 
