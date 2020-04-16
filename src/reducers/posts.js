@@ -1,12 +1,17 @@
+import { getPosts, addPost, toggleLike } from '../actions/posts';
+import { createReducer } from '@reduxjs/toolkit';
 import faker from 'faker';
 
-export const posts = (state = { data: [], isLoading: false }, action) => {
-  switch (action.type) {
-    case 'GET_POSTS_START':
-      return { ...state, isLoading: true };
-    case 'GET_POSTS_SUCCESS':
-      return { ...state, data: action.payload.posts, isLoading: false };
-    case 'ADD_POST':
+export const posts = createReducer(
+  { data: [], isLoading: false },
+  {
+    [getPosts.pending]: (state) => ({ ...state, isLoading: true }),
+    [getPosts.fulfilled]: (state, action) => ({
+      ...state,
+      data: action.payload.posts,
+      isLoading: false
+    }),
+    [addPost]: (state, action) => {
       return {
         ...state,
         data: [
@@ -20,7 +25,8 @@ export const posts = (state = { data: [], isLoading: false }, action) => {
           }
         ]
       };
-    case 'TOGGLE_LIKE':
+    },
+    [toggleLike]: (state, action) => {
       const data = state.data.map((post) => {
         if (post.id !== action.payload.postId) return post;
 
@@ -34,7 +40,6 @@ export const posts = (state = { data: [], isLoading: false }, action) => {
       });
 
       return { ...state, data };
-    default:
-      return state;
+    }
   }
-};
+);

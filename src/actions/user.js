@@ -1,12 +1,8 @@
 import * as api from '../api';
+import { createAsyncThunk } from '@reduxjs/toolkit';
 
-export const getUser = () => async (dispatch) => {
-  try {
-    dispatch({ type: 'GET_USER_START' });
-    const user = await api.getUser();
+export const getUser = createAsyncThunk('GET_USER', async () => {
+  const user = await api.getUser();
 
-    dispatch({ type: 'GET_USER_SUCCESS', payload: { user } });
-  } catch (error) {
-    dispatch({ type: 'GET_USER_FAIL', payload: { error } });
-  }
-};
+  return { user };
+});

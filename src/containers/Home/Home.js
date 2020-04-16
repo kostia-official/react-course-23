@@ -33,11 +33,11 @@ class HomeComponent extends React.Component {
       <div>
         <PostsWrapper>
           {_.map(posts, (post) => (
-            <Post key={post.id} post={post} toggleLike={(postId) => toggleLike(postId)} />
+            <Post key={post.id} post={post} toggleLike={(postId) => toggleLike({ postId })} />
           ))}
         </PostsWrapper>
         <CardModal isShow={isShow} onClose={this.closeModal}>
-          <AddPostModalContent onAdd={(imageUrl) => addPost(imageUrl, user.id)} />
+          <AddPostModalContent onAdd={(imageUrl) => addPost({ imageUrl, userId: user.id })} />
         </CardModal>
         <FloatingAddButton onClick={this.openModal} />
       </div>
@@ -52,8 +52,8 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  addPost: (...args) => dispatch(addPost(...args)),
-  toggleLike: (...args) => dispatch(toggleLike(...args)),
+  addPost: (payload) => dispatch(addPost(payload)),
+  toggleLike: (payload) => dispatch(toggleLike(payload)),
   getUser: () => dispatch(getUser()),
   getPosts: () => dispatch(getPosts())
 });

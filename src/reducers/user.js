@@ -1,16 +1,17 @@
-export const user = (
-  state = {
+import { getUser } from '../actions/user';
+import { createReducer } from '@reduxjs/toolkit';
+
+export const user = createReducer(
+  {
     data: {},
     isLoading: false
   },
-  action
-) => {
-  switch (action.type) {
-    case 'GET_USER_START':
-      return { ...state, isLoading: true };
-    case 'GET_USER_SUCCESS':
-      return { ...state, data: action.payload.user, isLoading: false };
-    default:
-      return state;
+  {
+    [getUser.pending]: (state) => ({ ...state, isLoading: true }),
+    [getUser.fulfilled]: (state, action) => ({
+      ...state,
+      data: action.payload.user,
+      isLoading: false
+    })
   }
-};
+);

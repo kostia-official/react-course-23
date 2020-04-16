@@ -1,31 +1,11 @@
+import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import * as api from '../api';
 
-export const getPosts = () => async (dispatch) => {
-  try {
-    dispatch({ type: 'GET_POSTS_START' });
-    const posts = await api.getPosts();
+export const getPosts = createAsyncThunk('GET_POSTS', async () => {
+  const posts = await api.getPosts();
 
-    dispatch({ type: 'GET_POSTS_SUCCESS', payload: { posts } });
-  } catch (error) {
-    dispatch({ type: 'GET_POSTS_FAIL', payload: { error } });
-  }
-};
+  return { posts };
+});
 
-export const addPost = (imageUrl, userId) => {
-  return {
-    type: 'ADD_POST',
-    payload: {
-      imageUrl,
-      userId
-    }
-  };
-};
-
-export const toggleLike = (postId) => {
-  return {
-    type: 'TOGGLE_LIKE',
-    payload: {
-      postId
-    }
-  };
-};
+export const addPost = createAction('ADD_POST');
+export const toggleLike = createAction('TOGGLE_LIKE');
