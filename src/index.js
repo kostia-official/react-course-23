@@ -7,10 +7,10 @@ import './index.scss';
 import { createBrowserHistory } from 'history';
 import rootReducer from './reducers';
 import { Provider as ReduxProvider } from 'react-redux';
-import { createStore } from 'redux';
+import { configureStore } from '@reduxjs/toolkit';
 
 const history = createBrowserHistory();
-const store = createStore(rootReducer);
+const store = configureStore({ reducer: rootReducer });
 
 ReactDOM.render(
   <ReduxProvider store={store}>

@@ -5,30 +5,39 @@ import { Post } from '../../components/Post/Post';
 import { FloatingAddButton } from '../../components/FloatingAddButton/FloatingAddButton';
 import { AddPostModalContent } from '../../components/AddPostModalContent/AddPostModalContent';
 import { CardModal } from '../../components/CardModal/CardModal';
-import { addPost, toggleLike } from '../../actions/posts';
+import { getPosts } from '../../actions/posts';
+import { getUser } from '../../actions/user';
+import { posts } from '../../reducers/posts';
 
 class HomeComponent extends React.Component {
   state = {
     isShow: false
   };
 
+  componentDidMount() {
+    this.props.getPosts();
+    this.props.getUser();
+  }
+
   openModal = () => this.setState({ isShow: true });
 
   closeModal = () => this.setState({ isShow: false });
 
   render() {
-    const { posts, user, addPost, toggleLike } = this.props;
+    const { posts, user, addPost, toggleLike, isLoading } = this.props;
     const { isShow } = this.state;
+
+    if (isLoading) return 'Loading...';
 
     return (
       <div>
         <PostsWrapper>
           {posts.map((post) => (
-            <Post key={post.id} post={post} toggleLike={(postId) => toggleLike(postId)} />
+            <Post key={post.id} post={post} toggleLike={(postId) => toggleLike({ postId })} />
           ))}
         </PostsWrapper>
         <CardModal isShow={isShow} onClose={this.closeModal}>
-          <AddPostModalContent onAdd={(imageUrl) => addPost(imageUrl, user.id)} />
+          <AddPostModalContent onAdd={(imageUrl) => addPost({ imageUrl, userId: user.id })} />
         </CardModal>
         <FloatingAddButton onClick={this.openModal} />
       </div>
@@ -37,13 +46,16 @@ class HomeComponent extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  posts: state.posts,
-  user: state.user
+  user: state.user.data,
+  posts: state.posts.data,
+  isLoading: state.posts.isLoading || state.user.isLoading
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  addPost: (...args) => dispatch(addPost(...args)),
-  toggleLike: (...args) => dispatch(toggleLike(...args))
+  addPost: (...args) => dispatch(posts.actions.addPost(...args)),
+  toggleLike: (...args) => dispatch(posts.actions.toggleLike(...args)),
+  getPosts: () => dispatch(getPosts()),
+  getUser: () => dispatch(getUser())
 });
 
 export const Home = connect(mapStateToProps, mapDispatchToProps)(HomeComponent);

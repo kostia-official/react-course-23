@@ -1,18 +1,7 @@
-export const addPost = (imageUrl, userId) => {
-  return {
-    type: 'ADD_POST',
-    payload: {
-      imageUrl,
-      userId
-    }
-  };
-};
+import * as api from '../api';
+import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 
-export const toggleLike = (postId) => {
-  return {
-    type: 'TOGGLE_LIKE',
-    payload: {
-      postId
-    }
-  };
-};
+export const getPosts = createAsyncThunk('GET_POSTS', async () => {
+  const posts = await api.getPosts();
+  return { posts };
+});
