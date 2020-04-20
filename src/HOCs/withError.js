@@ -6,11 +6,6 @@ import { NotFound } from '../components/NotFound/NotFound';
 
 export const withError = (WrappedComponent) => {
   return class extends React.Component {
-    state = {
-      errorMessage: '',
-      isNotFound: false
-    };
-
     setErrorMessage = (err) => {
       console.error(err);
 
@@ -47,11 +42,11 @@ export const withError = (WrappedComponent) => {
         <div>
           {this.state.isNotFound && <NotFound errorMessage="Уроки не найдены" />}
           <ErrorMessage
-            isShow={!!this.state.errorMessage}
-            errorMessage={this.state.errorMessage}
+            isShow={!!this.props.errorMessage}
+            errorMessage={this.props.errorMessage}
             onClose={this.onErrorClose}
           />
-          <WrappedComponent {...this.props} setErrorMessage={this.setErrorMessage} />
+          <WrappedComponent {...this.props} />
         </div>
       );
     }
