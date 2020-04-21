@@ -1,12 +1,12 @@
 import React from 'react';
-import { getLessons } from '../../api';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { ButtonBase } from '@material-ui/core';
 import styled from 'styled-components';
-import { withRequest } from '../../HOCs/withRequest';
+import { getLessons } from '../../actions/lessons';
+import { connect } from 'react-redux';
 
 const LessonWrapper = styled.div`
   padding: 10px;
@@ -18,20 +18,12 @@ const ButtonItem = styled(ButtonBase)`
 `;
 
 class LessonsComponent extends React.Component {
-  state = {
-    lessons: []
-  };
-
-  async componentDidMount() {
-    this.props.request(async () => {
-      const lessons = await getLessons();
-
-      this.setState({ lessons });
-    });
+  componentDidMount() {
+    this.props.getLessons();
   }
 
   render() {
-    const { lessons } = this.state;
+    const { lessons } = this.props;
 
     return (
       <div>
@@ -53,6 +45,11 @@ class LessonsComponent extends React.Component {
   }
 }
 
-const Lessons = withRequest(LessonsComponent);
+const mapStateToProps = (state) => ({ lessons: state.lessons });
+const mapDispatchToProps = (dispatch) => ({
+  getLessons: () => dispatch(getLessons())
+});
+
+const Lessons = connect(mapStateToProps, mapDispatchToProps)(LessonsComponent);
 
 export default Lessons;

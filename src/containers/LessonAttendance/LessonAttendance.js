@@ -1,21 +1,31 @@
 import React from 'react';
-import _ from 'lodash';
 import { StudentsTable } from '../../components/StudentsTable/StudentsTable';
 import qs from 'query-string';
-import { GetStudents } from '../../components/GetStudents/GetStudents';
+import { connect } from 'react-redux';
+import _ from 'lodash';
+import { getLessonAttendance } from '../../actions/lessons-attendance';
 
-function LessonAttendance({ location }) {
-  const { date } = qs.parse(location.search);
+const getDateFromProps = (props) => qs.parse(props.location.search)?.date;
 
-  return (
-    <GetStudents date={date}>
-      {(students) => {
-        const presentStudents = _.filter(students, 'isPresent');
+class LessonAttendance extends React.Component {
+  componentDidMount() {
+    const date = getDateFromProps(this.props);
 
-        return <StudentsTable students={presentStudents} />;
-      }}
-    </GetStudents>
-  );
+    if (_.isEmpty(this.props.students)) {
+      this.props.getLessonAttendance(date);
+    }
+  }
+
+  render() {
+    return <StudentsTable students={this.props.students} />;
+  }
 }
 
-export default LessonAttendance;
+const mapStateToProps = (state, props) => ({
+  students: state.lessonsAttendance[getDateFromProps(props)] || []
+});
+const mapDispatchToProps = (dispatch) => ({
+  getLessonAttendance: (payload) => dispatch(getLessonAttendance(payload))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(LessonAttendance);

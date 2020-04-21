@@ -5,6 +5,10 @@ import styled from 'styled-components';
 import { Persist } from '../../components/Persist/Persist';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import { NotFound } from '../../components/NotFound/NotFound';
+import { connect } from 'react-redux';
+import { LoaderWrapper } from '../../components/LoaderWrapper/LoaderWrapper';
+import { ErrorMessage } from '../../components/ErrorMessage/ErrorMessage';
+import { app } from '../../reducers/app';
 
 const Home = React.lazy(() => import('../Home/Home'));
 const Lessons = React.lazy(() => import('../Lessons/Lessons'));
@@ -57,6 +61,7 @@ class App extends React.Component {
 
   render() {
     const { isExpandedMenu } = this.state;
+    const { errorMessage, errorClose } = this.props;
     const isShowBack = this.props.history.location.pathname !== '/';
 
     return (
@@ -66,6 +71,8 @@ class App extends React.Component {
           onBackClick={this.onBackClick}
           isShowBack={isShowBack}
         />
+
+        <ErrorMessage isShow={!!errorMessage} errorMessage={errorMessage} onClose={errorClose} />
 
         <Persist name="app" data={{ isExpandedMenu }} onMount={(data) => this.setState(data)} />
 
@@ -78,18 +85,20 @@ class App extends React.Component {
           />
 
           <PageWrapper>
-            <Suspense fallback={<div />}>
-              <Switch>
-                <Route path="/" exact component={Home} />
-                <Route
-                  path="/lessons"
-                  exact
-                  render={(props) => <Lessons {...props} onClick={this.onLessonClick} />}
-                />
-                <Route path="/lessons/attendance" exact component={LessonAttendance} />
-                <Route path="*" component={NotFound} />
-              </Switch>
-            </Suspense>
+            <LoaderWrapper isLoading={this.props.isLoading}>
+              <Suspense fallback={<div />}>
+                <Switch>
+                  <Route path="/" exact component={Home} />
+                  <Route
+                    path="/lessons"
+                    exact
+                    render={(props) => <Lessons {...props} onClick={this.onLessonClick} />}
+                  />
+                  <Route path="/lessons/attendance" exact component={LessonAttendance} />
+                  <Route path="*" component={NotFound} />
+                </Switch>
+              </Suspense>
+            </LoaderWrapper>
           </PageWrapper>
         </ContentWrapper>
       </div>
@@ -97,4 +106,10 @@ class App extends React.Component {
   }
 }
 
-export default withRouter(App);
+const mapStateToProps = (state) => ({
+  isLoading: state.app.isLoading,
+  errorMessage: state.app.errorMessage
+});
+const mapDispatchToProps = (dispatch) => ({ errorClose: () => dispatch(app.actions.errorClose()) });
+
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(App));

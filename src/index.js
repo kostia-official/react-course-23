@@ -5,14 +5,20 @@ import { ThemeProvider } from './ThemeProvider';
 import { Router } from 'react-router-dom';
 import './index.scss';
 import { createBrowserHistory } from 'history';
+import { configureStore } from '@reduxjs/toolkit';
+import { Provider as ReduxProvider } from 'react-redux';
+import rootReducer from './reducers';
 
 const history = createBrowserHistory();
+const store = configureStore({ reducer: rootReducer });
 
 ReactDOM.render(
-  <Router history={history}>
-    <ThemeProvider>
-      <App />
-    </ThemeProvider>
-  </Router>,
+  <ReduxProvider store={store}>
+    <Router history={history}>
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>
+    </Router>
+  </ReduxProvider>,
   document.getElementById('root')
 );

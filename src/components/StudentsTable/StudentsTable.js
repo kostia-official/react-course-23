@@ -1,6 +1,7 @@
 import React from 'react';
 import MaterialTable from 'material-table';
 import { ControlledInput } from '../ControlledInput/ControlledInput';
+import _ from 'lodash';
 
 export const StudentsTable = ({ students, title = 'Список студентов', actions, onScoreUpdate }) => {
   return (
@@ -27,7 +28,7 @@ export const StudentsTable = ({ students, title = 'Список студенто
           }
         }
       ]}
-      data={students}
+      data={_.cloneDeep(students)}
       options={{
         paging: false,
         search: false,
