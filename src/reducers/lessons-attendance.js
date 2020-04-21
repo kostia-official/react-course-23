@@ -1,6 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { getLessonAttendance } from '../actions/lessons-attendance';
 import _ from 'lodash';
+import { setPresentStatus, unsetPresentStatus } from '../actions/students';
+
+const resetCache = () => ({});
 
 export const lessonsAttendance = createSlice({
   name: 'lessons-attendance',
@@ -11,6 +14,10 @@ export const lessonsAttendance = createSlice({
       const presentStudents = _.filter(students, 'isPresent');
 
       return { ...state, [date]: presentStudents };
-    }
+    },
+    [setPresentStatus.fulfilled]: resetCache,
+    [unsetPresentStatus.fulfilled]: resetCache
   }
 });
+
+export const getAttendanceByDate = (state, date) => state.lessonsAttendance[date] || [];

@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { getStudents } from '../actions/students';
+import { getStudents, syncStudents } from '../actions/students';
 import _ from 'lodash';
 
 export const students = createSlice({
@@ -17,6 +17,10 @@ export const students = createSlice({
     }
   },
   extraReducers: {
-    [getStudents.fulfilled]: (state, action) => action.payload
+    [getStudents.fulfilled]: (state, action) => action.payload,
+    [syncStudents.fulfilled]: (state, action) => action.payload
   }
 });
+
+export const getPresentStudents = (state) => _.filter(state.students, { isPresent: true });
+export const getAbsentStudents = (state) => _.filter(state.students, { isPresent: false });

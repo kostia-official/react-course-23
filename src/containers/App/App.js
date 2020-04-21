@@ -110,6 +110,6 @@ const mapStateToProps = (state) => ({
   isLoading: state.app.isLoading,
   errorMessage: state.app.errorMessage
 });
-const mapDispatchToProps = (dispatch) => ({ errorClose: () => dispatch(app.actions.errorClose()) });
+const actionCreators = { errorClose: () => app.actions.errorClose() };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(App));
+export default connect(mapStateToProps, actionCreators)(withRouter(App));

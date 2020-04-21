@@ -10,9 +10,14 @@ import {
   getStudents,
   addScore,
   setPresentStatus,
-  unsetPresentStatus
+  unsetPresentStatus,
+  syncStudents
 } from '../../actions/students';
-import { students as studentsSlice } from '../../reducers/students';
+import {
+  students as studentsSlice,
+  getPresentStudents,
+  getAbsentStudents
+} from '../../reducers/students';
 import { connect } from 'react-redux';
 
 class Home extends React.Component {
@@ -21,11 +26,13 @@ class Home extends React.Component {
   };
 
   componentDidMount() {
-    this.syncStudents();
+    this.props.getStudents();
   }
 
-  syncStudents = () => {
-    this.props.getStudents();
+  handleError = (action) => {
+    if (action.error) {
+      this.props.syncStudents();
+    }
   };
 
   updateStudent = (id, updater) => {
@@ -46,7 +53,7 @@ class Home extends React.Component {
       score: student.score + score
     }));
 
-    this.props.addScore({ id, score });
+    this.props.addScore({ id, score }).then(this.handleError);
   };
 
   setAbsentStatus = async (id) => {
@@ -55,7 +62,7 @@ class Home extends React.Component {
 
     this.updateStudent(id, () => ({ isPresent: false }));
 
-    this.props.unsetPresentStatus(id);
+    this.props.unsetPresentStatus(id).then(this.handleError);
   };
 
   setPresentStatus = async (id) => {
@@ -64,25 +71,19 @@ class Home extends React.Component {
 
     this.updateStudent(id, () => ({ isPresent: true }));
 
-    this.props.setPresentStatus(id);
+    this.props.setPresentStatus(id).then(this.handleError);
   };
 
-  resetAbsentStatus = async () => {
-    try {
-      const students = _.cloneDeep(this.state.students);
+  resetAbsentStatus = () => {
+    const students = _.cloneDeep(this.props.students);
 
-      this.props.resetAbsentStatus();
+    this.props.resetAbsentStatus();
 
-      const promises = _.map(students, async ({ id, isPresent }) => {
-        if (!isPresent) {
-          await this.props.setPresentStatus(id);
-        }
-      });
-
-      await Promise.all(promises);
-    } catch (err) {
-      await this.setErrorMessage(err);
-    }
+    _.map(students, ({ id, isPresent }) => {
+      if (!isPresent) {
+        this.props.setPresentStatus(id).then(this.handleError);
+      }
+    });
   };
 
   openSetAbsentModal = () => {
@@ -98,9 +99,7 @@ class Home extends React.Component {
   };
 
   render() {
-    const { students } = this.props;
-    const presentStudents = _.filter(students, { isPresent: true });
-    const absentStudents = _.filter(students, { isPresent: false });
+    const { students, presentStudents, absentStudents } = this.props;
 
     return (
       <>
@@ -175,16 +174,18 @@ class Home extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  students: state.students
+  students: state.students,
+  presentStudents: getPresentStudents(state),
+  absentStudents: getAbsentStudents(state)
 });
 
-const mapDispatchToProps = (dispatch) => ({
-  setStudents: (payload) => dispatch(studentsSlice.actions.setStudents(payload)),
-  resetAbsentStatus: () => dispatch(studentsSlice.actions.resetAbsentStatus()),
-  getStudents: () => dispatch(getStudents()),
-  addScore: (payload) => dispatch(addScore(payload)),
-  setPresentStatus: (payload) => dispatch(setPresentStatus(payload)),
-  unsetPresentStatus: (payload) => dispatch(unsetPresentStatus(payload))
-});
+const actionCreators = {
+  ...studentsSlice.actions,
+  getStudents,
+  syncStudents,
+  addScore,
+  setPresentStatus,
+  unsetPresentStatus
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+export default connect(mapStateToProps, actionCreators)(Home);
