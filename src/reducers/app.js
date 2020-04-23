@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { getLessons } from '../actions/lessons';
 import { getLessonAttendance } from '../actions/lessons-attendance';
-import { getStudents } from '../actions/students';
+import { getStudents, addScore, setPresentStatus, unsetPresentStatus } from '../actions/students';
 
 const startLoading = (state) => ({ ...state, isLoading: true });
 const finishLoading = (state) => ({ ...state, isLoading: false });
@@ -29,6 +29,9 @@ export const app = createSlice({
     [getLessonAttendance.rejected]: setErrorMessage,
     [getStudents.pending]: startLoading,
     [getStudents.fulfilled]: finishLoading,
-    [getStudents.rejected]: setErrorMessage
+    [getStudents.rejected]: setErrorMessage,
+    [addScore.rejected]: setErrorMessage,
+    [setPresentStatus.rejected]: setErrorMessage,
+    [unsetPresentStatus.rejected]: setErrorMessage
   }
 });
