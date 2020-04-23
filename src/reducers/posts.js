@@ -1,6 +1,8 @@
 import faker from 'faker';
 import { getPosts } from '../actions/posts';
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createSelector } from '@reduxjs/toolkit';
+import _ from 'lodash';
+import { getUserId } from './user';
 
 export const posts = createSlice({
   name: 'posts',
@@ -12,25 +14,25 @@ export const posts = createSlice({
         {
           id: faker.random.uuid(),
           imageUrl: action.payload.imageUrl,
-          likes: 0,
-          userId: action.payload.userId,
-          isLiked: false
+          likes: [],
+          userId: action.payload.userId
         }
       ];
 
       return { ...state, data };
     },
     toggleLike: (state, action) => {
+      const { postId, userId } = action.payload;
+
       const data = state.data.map((post) => {
-        if (post.id !== action.payload.postId) return post;
+        if (post.id !== postId) return post;
 
-        const isLiked = !post.isLiked;
+        const isLike = !_.includes(post.likes, userId);
+        const likes = isLike
+          ? [...post.likes, userId]
+          : _.filter(post.likes, (likedBy) => likedBy !== userId);
 
-        return {
-          ...post,
-          likes: isLiked ? post.likes + 1 : post.likes - 1,
-          isLiked
-        };
+        return { ...post, likes };
       });
 
       return { ...state, data };
@@ -40,4 +42,28 @@ export const posts = createSlice({
     [getPosts.pending]: (state) => ({ ...state, isLoading: true }),
     [getPosts.fulfilled]: (state, action) => ({ data: action.payload.posts, isLoading: false })
   }
+});
+
+export const getPostsData = (state) => state.posts.data;
+
+export const getPostsWithIsLiked = createSelector(getUserId, getPostsData, (userId, posts) => {
+  return _.map(posts, (post) => ({ ...post, isLiked: _.includes(post.likes, userId) }));
+});
+
+export const getCurrentUserPostsCount = (state) => {
+  const ownUserId = getUserId(state);
+
+  return _.reduce(
+    state.posts.data,
+    (count, post) => {
+      if (post.userId !== ownUserId) return count;
+
+      return count + 1;
+    },
+    0
+  );
+};
+
+export const getCurrentUserLikesCount = createSelector(getPostsWithIsLiked, (posts) => {
+  return _.reduce(posts, (count, post) => (post.isLiked ? count + 1 : count), 0);
 });
