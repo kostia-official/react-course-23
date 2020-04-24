@@ -8,3 +8,5 @@ export const user = createReducer(
     [getUser.fulfilled]: (state, action) => ({ data: action.payload.user, isLoading: false })
   }
 );
+
+export const getUserId = (state) => state.user.data?.id;

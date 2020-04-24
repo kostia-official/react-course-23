@@ -1,5 +1,4 @@
 import React, { Suspense } from 'react';
-import _ from 'lodash';
 import { Header } from '../../components/Header/Header';
 import { Navigation } from '../../components/Navigation/Navigation';
 import styled from 'styled-components';
@@ -7,6 +6,7 @@ import { Persist } from '../../components/Persist/Persist';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import { Home } from '../Home/Home';
 import { connect } from 'react-redux';
+import { getCurrentUserPostsCount, getCurrentUserLikesCount } from '../../reducers/posts';
 
 const pages = [
   {
@@ -83,26 +83,8 @@ class App extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  postsCount: _.reduce(
-    state.posts.data,
-    (count, post) => {
-      const ownUserId = state.user.data?.id;
-
-      if (post.userId !== ownUserId) return count;
-
-      return count + 1;
-    },
-    0
-  ),
-  likesCount: _.reduce(
-    state.posts.data,
-    (count, post) => {
-      if (post.isLiked) return count + 1;
-
-      return count;
-    },
-    0
-  )
+  postsCount: getCurrentUserPostsCount(state),
+  likesCount: getCurrentUserLikesCount(state)
 });
 
 export default connect(mapStateToProps)(withRouter(App));

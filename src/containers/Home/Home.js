@@ -7,7 +7,7 @@ import { AddPostModalContent } from '../../components/AddPostModalContent/AddPos
 import { CardModal } from '../../components/CardModal/CardModal';
 import { getPosts } from '../../actions/posts';
 import { getUser } from '../../actions/user';
-import { posts } from '../../reducers/posts';
+import { posts, getPostsWithIsLikes } from '../../reducers/posts';
 
 class HomeComponent extends React.Component {
   state = {
@@ -24,7 +24,7 @@ class HomeComponent extends React.Component {
   closeModal = () => this.setState({ isShow: false });
 
   render() {
-    const { posts, user, addPost, toggleLike, isLoading } = this.props;
+    const { posts, userId, addPost, toggleLike, isLoading } = this.props;
     const { isShow } = this.state;
 
     if (isLoading) return 'Loading...';
@@ -33,11 +33,15 @@ class HomeComponent extends React.Component {
       <div>
         <PostsWrapper>
           {posts.map((post) => (
-            <Post key={post.id} post={post} toggleLike={(postId) => toggleLike({ postId })} />
+            <Post
+              key={post.id}
+              post={post}
+              toggleLike={(postId) => toggleLike({ postId, userId })}
+            />
           ))}
         </PostsWrapper>
         <CardModal isShow={isShow} onClose={this.closeModal}>
-          <AddPostModalContent onAdd={(imageUrl) => addPost({ imageUrl, userId: user.id })} />
+          <AddPostModalContent onAdd={(imageUrl) => addPost({ imageUrl, userId })} />
         </CardModal>
         <FloatingAddButton onClick={this.openModal} />
       </div>
@@ -46,16 +50,22 @@ class HomeComponent extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  user: state.user.data,
-  posts: state.posts.data,
+  userId: state.user.data?.id,
+  posts: getPostsWithIsLikes(state),
   isLoading: state.posts.isLoading || state.user.isLoading
 });
 
-const mapDispatchToProps = (dispatch) => ({
-  addPost: (...args) => dispatch(posts.actions.addPost(...args)),
-  toggleLike: (...args) => dispatch(posts.actions.toggleLike(...args)),
-  getPosts: () => dispatch(getPosts()),
-  getUser: () => dispatch(getUser())
-});
+// const mapDispatchToProps = (dispatch) => ({
+//   addPost: (...args) => dispatch(posts.actions.addPost(...args)),
+//   toggleLike: (...args) => dispatch(posts.actions.toggleLike(...args)),
+//   getPosts: () => dispatch(getPosts()),
+//   getUser: () => dispatch(getUser())
+// });
 
-export const Home = connect(mapStateToProps, mapDispatchToProps)(HomeComponent);
+const actionCreators = {
+  getPosts,
+  getUser,
+  ...posts.actions
+};
+
+export const Home = connect(mapStateToProps, actionCreators)(HomeComponent);

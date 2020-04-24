@@ -1,39 +1,28 @@
 import faker from 'faker';
 import { getPosts } from '../actions/posts';
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createSelector } from '@reduxjs/toolkit';
+import _ from 'lodash';
+import { getUserId } from './user';
 
 export const posts = createSlice({
   name: 'posts',
   initialState: { data: [], isLoading: false },
   reducers: {
     addPost: (state, action) => {
-      const data = [
-        ...state.data,
-        {
-          id: faker.random.uuid(),
-          imageUrl: action.payload.imageUrl,
-          likes: 0,
-          userId: action.payload.userId,
-          isLiked: false
-        }
-      ];
-
-      return { ...state, data };
+      state.data.push({
+        id: faker.random.uuid(),
+        imageUrl: action.payload.imageUrl,
+        likes: [],
+        userId: action.payload.userId
+      });
     },
     toggleLike: (state, action) => {
-      const data = state.data.map((post) => {
-        if (post.id !== action.payload.postId) return post;
+      const { userId, postId } = action.payload;
 
-        const isLiked = !post.isLiked;
+      const post = _.find(state.data, { id: postId });
+      const isLiked = _.includes(post.likes, userId);
 
-        return {
-          ...post,
-          likes: isLiked ? post.likes + 1 : post.likes - 1,
-          isLiked
-        };
-      });
-
-      return { ...state, data };
+      post.likes = isLiked ? post.likes.filter((like) => like !== userId) : [...post.likes, userId];
     }
   },
   extraReducers: {
@@ -41,3 +30,45 @@ export const posts = createSlice({
     [getPosts.fulfilled]: (state, action) => ({ data: action.payload.posts, isLoading: false })
   }
 });
+
+/*export const getPostsWithIsLikes = (state) => {
+  const userId = getUserId(state);
+
+  return _.map(state.posts.data, (post) => {
+    const { likes } = post;
+    return { ...post, isLiked: likes.includes(userId) };
+  });
+};*/
+
+export const getPostsData = (state) => state.posts.data;
+
+export const getPostsWithIsLikes = createSelector(getUserId, getPostsData, (userId, posts) =>
+  _.map(posts, (post) => {
+    const { likes } = post;
+    return { ...post, isLiked: likes.includes(userId) };
+  })
+);
+
+export const getCurrentUserPostsCount = createSelector(getUserId, getPostsData, (userId, posts) =>
+  _.reduce(
+    posts,
+    (count, post) => {
+      if (post.userId !== userId) return count;
+
+      return count + 1;
+    },
+    0
+  )
+);
+
+export const getCurrentUserLikesCount = createSelector(getPostsWithIsLikes, (posts) =>
+  _.reduce(
+    posts,
+    (count, post) => {
+      if (post.isLiked) return count + 1;
+
+      return count;
+    },
+    0
+  )
+);

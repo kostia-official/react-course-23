@@ -20,7 +20,7 @@ export const Post = ({ post, toggleLike }) => {
     <GridListTileStyled>
       <Image src={post.imageUrl} alt={post.id} />
       <GridListTileBar
-        title={post.likes}
+        title={post.likes.length}
         actionIcon={
           <IconButton>{post.isLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}</IconButton>
         }
