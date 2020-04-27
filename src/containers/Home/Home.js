@@ -5,9 +5,8 @@ import { Post } from '../../components/Post/Post';
 import { FloatingAddButton } from '../../components/FloatingAddButton/FloatingAddButton';
 import { AddPostModalContent } from '../../components/AddPostModalContent/AddPostModalContent';
 import { CardModal } from '../../components/CardModal/CardModal';
-import { getPosts } from '../../actions/posts';
-import { getUser } from '../../actions/user';
-import { posts, getPostsWithIsLikes } from '../../reducers/posts';
+import { getPosts, addPost } from '../../actions/posts';
+import { posts, getPostsWithIsLiked } from '../../reducers/posts';
 
 class HomeComponent extends React.Component {
   state = {
@@ -16,7 +15,6 @@ class HomeComponent extends React.Component {
 
   componentDidMount() {
     this.props.getPosts();
-    this.props.getUser();
   }
 
   openModal = () => this.setState({ isShow: true });
@@ -41,7 +39,7 @@ class HomeComponent extends React.Component {
           ))}
         </PostsWrapper>
         <CardModal isShow={isShow} onClose={this.closeModal}>
-          <AddPostModalContent onAdd={(imageUrl) => addPost({ imageUrl, userId })} />
+          <AddPostModalContent onAdd={(imageUrl) => addPost({ imageUrl })} />
         </CardModal>
         <FloatingAddButton onClick={this.openModal} />
       </div>
@@ -51,20 +49,13 @@ class HomeComponent extends React.Component {
 
 const mapStateToProps = (state) => ({
   userId: state.user.data?.id,
-  posts: getPostsWithIsLikes(state),
+  posts: getPostsWithIsLiked(state),
   isLoading: state.posts.isLoading || state.user.isLoading
 });
 
-// const mapDispatchToProps = (dispatch) => ({
-//   addPost: (...args) => dispatch(posts.actions.addPost(...args)),
-//   toggleLike: (...args) => dispatch(posts.actions.toggleLike(...args)),
-//   getPosts: () => dispatch(getPosts()),
-//   getUser: () => dispatch(getUser())
-// });
-
 const actionCreators = {
   getPosts,
-  getUser,
+  addPost,
   ...posts.actions
 };
 

@@ -1,11 +1,19 @@
-import { getUser } from '../actions/user';
+import { signUp, signIn, signOut } from '../actions/user';
 import { createReducer } from '@reduxjs/toolkit';
+import { Auth } from '../services/auth';
+
+const auth = (state, action) => ({
+  ...state,
+  data: action.payload.user,
+  isLoggedIn: true
+});
 
 export const user = createReducer(
-  { data: null, isLoading: false },
+  { data: null, isLoggedIn: Auth.isLoggedIn(), isLoading: false },
   {
-    [getUser.pending]: (state) => ({ ...state, isLoading: true }),
-    [getUser.fulfilled]: (state, action) => ({ data: action.payload.user, isLoading: false })
+    [signUp.fulfilled]: auth,
+    [signIn.fulfilled]: auth,
+    [signOut]: (state) => ({ ...state, isLoggedIn: false, data: null })
   }
 );
 
