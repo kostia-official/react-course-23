@@ -8,11 +8,18 @@ const auth = (state, action) => ({
   isLoggedIn: true
 });
 
+const setErrorMessage = (state, action) => ({
+  ...state,
+  errorMessage: action.error.message
+});
+
 export const user = createReducer(
-  { data: null, isLoggedIn: Auth.isLoggedIn(), isLoading: false },
+  { data: null, isLoggedIn: Auth.isLoggedIn(), isLoading: false, errorMessage: '' },
   {
     [signUp.fulfilled]: auth,
     [signIn.fulfilled]: auth,
+    [signUp.rejected]: setErrorMessage,
+    [signIn.rejected]: setErrorMessage,
     [signOut]: (state) => ({ ...state, isLoggedIn: false, data: null })
   }
 );

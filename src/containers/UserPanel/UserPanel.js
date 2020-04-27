@@ -55,7 +55,8 @@ class UserPanel extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  isLoggedIn: state.user.isLoggedIn
+  isLoggedIn: state.user.isLoggedIn,
+  errorMessage: state.user.errorMessage
 });
 
 const actionCreators = {
