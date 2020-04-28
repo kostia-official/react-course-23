@@ -1,7 +1,17 @@
 import * as api from '../api';
-import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { createAsyncThunk } from '@reduxjs/toolkit';
 
-export const getPosts = createAsyncThunk('GET_POSTS', async () => {
+export const getPosts = createAsyncThunk('posts/getPosts', async () => {
   const posts = await api.getPosts();
   return { posts };
+});
+
+export const addPost = createAsyncThunk('posts/addPost', async (postData) => {
+  const post = await api.addPost(postData);
+  return { post };
+});
+
+export const toggleLike = createAsyncThunk('posts/toggleLike', async ({ postId }) => {
+  const post = await api.toggleLike(postId);
+  return { post };
 });

@@ -5,8 +5,7 @@ import styled from 'styled-components';
 import { Persist } from '../../components/Persist/Persist';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import { Home } from '../Home/Home';
-import { connect } from 'react-redux';
-import { getCurrentUserPostsCount, getCurrentUserLikesCount } from '../../reducers/posts';
+import { UserPanel } from '../UserPanel/UserPanel';
 
 const pages = [
   {
@@ -46,17 +45,16 @@ class App extends React.Component {
 
   render() {
     const { isExpandedMenu } = this.state;
-    const { postsCount, likesCount } = this.props;
     const isShowBack = this.props.history.location.pathname !== '/';
 
     return (
       <div>
         <Header
-          title="Posts"
+          title="Memeization"
           onMenuClick={this.onMenuClick}
           onBackClick={this.onBackClick}
           isShowBack={isShowBack}
-          rightContent={`Posts: ${postsCount} Likes: ${likesCount}`}
+          rightContent={<UserPanel />}
         />
 
         <Persist name="app" data={{ isExpandedMenu }} onMount={(data) => this.setState(data)} />
@@ -82,9 +80,4 @@ class App extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  postsCount: getCurrentUserPostsCount(state),
-  likesCount: getCurrentUserLikesCount(state)
-});
-
-export default connect(mapStateToProps)(withRouter(App));
+export default withRouter(App);
