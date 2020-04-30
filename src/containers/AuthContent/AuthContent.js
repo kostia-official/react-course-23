@@ -3,9 +3,12 @@ import styled from 'styled-components';
 import { CardContent, TextField } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Link from '@material-ui/core/Link';
+import { signUp, signIn } from '../../actions/user';
+import { connect } from 'react-redux';
 
 const CardContentStyled = styled(CardContent)`
   display: flex;
+  justify-content: center;
   flex-direction: column;
   text-align: center;
   margin: 0 50px;
@@ -20,7 +23,7 @@ const LinkStyled = styled(Link)`
   margin: 6px 0;
 `;
 
-export class AuthModalContent extends React.Component {
+class AuthContentClass extends React.Component {
   state = {
     email: '',
     name: '',
@@ -42,9 +45,9 @@ export class AuthModalContent extends React.Component {
     const { email, name, password, isSignUpMode } = this.state;
 
     if (isSignUpMode) {
-      this.props.onSignUp({ email, name, password });
+      this.props.signUp({ email, name, password });
     } else {
-      this.props.onSignIn({ email, password });
+      this.props.signIn({ email, password });
     }
   };
 
@@ -83,3 +86,10 @@ export class AuthModalContent extends React.Component {
     );
   }
 }
+
+const actionCreators = {
+  signUp,
+  signIn
+};
+
+export const AuthContent = connect(null, actionCreators)(AuthContentClass);

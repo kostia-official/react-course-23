@@ -28,7 +28,6 @@ export const posts = createSlice({
 export const getPostsData = (state) => state.posts.data;
 
 export const getPostsWithIsLikes = createSelector(getUserId, getPostsData, (userId, posts) => {
-  console.log(userId);
   return _.map(posts, (post) => {
     const { likes } = post;
     return { ...post, isLiked: likes.includes(userId) };

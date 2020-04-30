@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { CardContent } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -17,14 +17,12 @@ export class AddPostModalContent extends React.Component {
     const { imageUrl } = this.state;
 
     return (
-      <Fragment>
-        <CardContent>
-          <TextField value={imageUrl} onChange={this.onImageUrlChange} placeholder="Image URL" />
-          <Button size="small" onClick={() => onAdd(imageUrl)}>
-            Add
-          </Button>
-        </CardContent>
-      </Fragment>
+      <CardContent>
+        <TextField value={imageUrl} onChange={this.onImageUrlChange} placeholder="Image URL" />
+        <Button size="small" onClick={() => onAdd(imageUrl)}>
+          Add
+        </Button>
+      </CardContent>
     );
   }
 }

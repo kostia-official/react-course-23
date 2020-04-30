@@ -1,11 +1,11 @@
 import axios from 'axios';
-import { Auth } from './services/auth';
+import { store } from './';
 
 const api = axios.create({ baseURL: 'https://memeization-staging.herokuapp.com/' });
 
 api.interceptors.request.use(
   (config) => {
-    config.headers.authorization = `Bearer ${Auth.getToken()}`;
+    config.headers.authorization = `Bearer ${store?.getState().user.accessToken}`;
     return config;
   },
   (error) => Promise.reject(error)
@@ -44,7 +44,7 @@ export const toggleLike = async (id) => {
 };
 
 export const getUser = async () => {
-  const { data } = await api.get('/posts');
+  const { data } = await api.get('/users/me');
 
   return data;
 };
