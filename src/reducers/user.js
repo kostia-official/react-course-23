@@ -11,7 +11,8 @@ const authenticate = (state, action) => ({
 const handleError = (state, action) => ({
   ...state,
   errorMessage: action.error.message,
-  isAuthenticated: false
+  isAuthenticated: false,
+  accessToken: null
 });
 
 export const user = createSlice({

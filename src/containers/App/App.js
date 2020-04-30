@@ -37,7 +37,7 @@ class App extends React.Component {
   };
 
   componentDidMount() {
-    this.props.getUser();
+    if (this.props.isAuthenticated) this.props.getUser();
   }
 
   onMenuClick = () => {
@@ -100,7 +100,10 @@ class App extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({ errorMessage: state.user.errorMessage });
+const mapStateToProps = (state) => ({
+  errorMessage: state.user.errorMessage,
+  isAuthenticated: state.user.isAuthenticated
+});
 
 const actionCreators = {
   getUser,
