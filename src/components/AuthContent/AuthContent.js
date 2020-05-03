@@ -20,7 +20,7 @@ const LinkStyled = styled(Link)`
   margin: 6px 0;
 `;
 
-export class AuthModalContent extends React.Component {
+export class AuthContent extends React.Component {
   state = {
     email: '',
     name: '',

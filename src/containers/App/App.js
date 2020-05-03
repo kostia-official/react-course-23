@@ -4,8 +4,14 @@ import { Navigation } from '../../components/Navigation/Navigation';
 import styled from 'styled-components';
 import { Persist } from '../../components/Persist/Persist';
 import { Route, Switch, withRouter } from 'react-router-dom';
-import { Home } from '../Home/Home';
+import { Home } from '../../pages/Home/Home';
 import { UserPanel } from '../UserPanel/UserPanel';
+import { closeError } from '../../actions/user';
+import { connect } from 'react-redux';
+import { ErrorMessage } from '../../components/ErrorMessage/ErrorMessage';
+import { Auth } from '../../pages/Auth/Auth';
+import { AddPost } from '../../pages/AddPost/AddPost';
+import { PrivateRoute } from '../PrivateRoute/PrivateRoute';
 
 const pages = [
   {
@@ -46,6 +52,7 @@ class App extends React.Component {
   render() {
     const { isExpandedMenu } = this.state;
     const isShowBack = this.props.history.location.pathname !== '/';
+    const { errorMessage, closeError } = this.props;
 
     return (
       <div>
@@ -55,6 +62,12 @@ class App extends React.Component {
           onBackClick={this.onBackClick}
           isShowBack={isShowBack}
           rightContent={<UserPanel />}
+        />
+
+        <ErrorMessage
+          errorMessage={errorMessage}
+          isShow={!!errorMessage}
+          onClose={() => closeError()}
         />
 
         <Persist name="app" data={{ isExpandedMenu }} onMount={(data) => this.setState(data)} />
@@ -71,6 +84,8 @@ class App extends React.Component {
             <Suspense fallback={<div />}>
               <Switch>
                 <Route path="/" exact component={Home} />
+                <Route path="/auth" exact component={Auth} />
+                <PrivateRoute path="/posts/add" exact component={AddPost} />
               </Switch>
             </Suspense>
           </PageWrapper>
@@ -80,4 +95,12 @@ class App extends React.Component {
   }
 }
 
-export default withRouter(App);
+const mapStateToProps = (state) => ({
+  errorMessage: state.user.errorMessage
+});
+
+const actionCreators = {
+  closeError
+};
+
+export default connect(mapStateToProps, actionCreators)(withRouter(App));

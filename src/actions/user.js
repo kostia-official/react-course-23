@@ -1,6 +1,5 @@
 import * as api from '../api';
 import { createAsyncThunk, createAction } from '@reduxjs/toolkit';
-import { Auth } from '../services/auth';
 
 export const getUser = createAsyncThunk('user/getUser', async () => {
   const user = await api.getUser();
@@ -10,21 +9,15 @@ export const getUser = createAsyncThunk('user/getUser', async () => {
 export const signUp = createAsyncThunk('user/signUp', async ({ email, name, password }) => {
   const { user, accessToken } = await api.signUp({ email, name, password });
 
-  Auth.setToken(accessToken);
-
-  return { user };
+  return { user, accessToken };
 });
 
 export const signIn = createAsyncThunk('user/signIn', async ({ email, password }) => {
   const { user, accessToken } = await api.signIn({ email, password });
 
-  Auth.setToken(accessToken);
-
-  return { user };
+  return { user, accessToken };
 });
 
-export const signOut = createAction('user/signOut', () => {
-  Auth.clearToken();
+export const signOut = createAction('user/signOut');
 
-  return {};
-});
+export const closeError = createAction('user/closeError');
